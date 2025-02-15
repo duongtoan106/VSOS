@@ -2,13 +2,16 @@ import { useState } from "react";
 import { FaGoogle } from "react-icons/fa";
 import backgroundImage from "../../assets/background.png";
 
-const Login = () => {
+const Register = () => {
+  const [username, setUsername] = useState("");
+  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Đăng nhập với:", { email, password });
+    console.log("Đăng ký với:", { username, phone, email, password });
   };
 
   const handleGoogleLogin = () => {
@@ -27,24 +30,60 @@ const Login = () => {
 
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md relative z-10">
         <h2 className="text-3xl font-semibold text-center text-blue-600 mb-6">
-          Đăng Nhập
+          Đăng Ký
         </h2>
 
-        {/* Form đăng nhập */}
+        {/* Form đăng ký */}
         <form onSubmit={handleSubmit}>
+          <div className="mb-6">
+            <label
+              htmlFor="username"
+              className="block text-sm font-semibold text-gray-700 mb-2 text-left"
+            >
+              Tên đăng nhập
+            </label>
+            <input
+              type="text"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Nhập tên đăng nhập"
+              className="w-full px-4 py-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          <div className="mb-6">
+            <label
+              htmlFor="phone"
+              className="block text-sm font-semibold text-gray-700 mb-2 text-left"
+            >
+              Số điện thoại
+            </label>
+            <input
+              type="tel"
+              id="phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="Nhập số điện thoại"
+              className="w-full px-4 py-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
           <div className="mb-6">
             <label
               htmlFor="email"
               className="block text-sm font-semibold text-gray-700 mb-2 text-left"
             >
-              Tên đăng nhập
+              Email
             </label>
             <input
               type="email"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Nhập tên đăng nhập"
+              placeholder="Nhập email"
               className="w-full px-4 py-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
@@ -68,11 +107,29 @@ const Login = () => {
             />
           </div>
 
+          <div className="mb-6">
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-semibold text-gray-700 mb-2 text-left"
+            >
+              Nhập lại mật khẩu
+            </label>
+            <input
+              type="password"
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Nhập lại mật khẩu"
+              className="w-full px-4 py-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
           <button
             type="submit"
             className="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all"
           >
-            Đăng Nhập
+            Đăng Ký
           </button>
         </form>
 
@@ -91,4 +148,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
