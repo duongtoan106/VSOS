@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import Layout from "@/containers/Layouts/Layout";
 
 import Login from "@/containers/Login/index";
+import Register from "@/containers/Register/index";
 import LayoutLanding from "../components/landingPage/page/LayoutLanding";
 
 //luồng ruoting chính sẽ là component này
@@ -11,7 +12,8 @@ const AppRoutes = () => {
     <Routes>
       {/* Route chính có Layout */}
       <Route path="/" element={<Layout />}>
-        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Route>
       <Route path="/landingPage" element={<LayoutLanding />} />
     </Routes>

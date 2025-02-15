@@ -17,11 +17,14 @@ const Login = () => {
 
   return (
     <div
-      className="flex items-center justify-center min-h-screen bg-cover bg-center"
+      className="flex items-center justify-center min-h-screen bg-cover bg-center relative"
       style={{
         backgroundImage: `url(${backgroundImage})`,
       }}
     >
+      {/* Lớp phủ làm mờ nền với màu xám */}
+      <div className="absolute inset-0 bg-gray-700 opacity-60 z-0"></div>
+
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md relative z-10">
         <h2 className="text-3xl font-semibold text-center text-blue-600 mb-6">
           Đăng Nhập
