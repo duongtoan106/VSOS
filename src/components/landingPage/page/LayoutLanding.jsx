@@ -3,12 +3,13 @@ import WelcomePanel from "./WelcomePanel";
 import CompanyProfile from "./CompanyProfile";
 import WelcomeVSOS from "./WelcomeVSOS";
 import Service from "./Service";
-import Footer from "./Footer";
+import Footer from "./FooterLanding";
 import ShopService from "./ShopService";
 import Reason from "./Reason";
 import SOSForm from "./SOSForm";
+import FooterLanding from "./FooterLanding";
 
-export default function Layout() {
+export default function LayoutLanding() {
   return (
     <div>
       <WelcomeVSOS />
@@ -18,7 +19,7 @@ export default function Layout() {
       <ShopService />
       <Reason />
       <SOSForm />
-      <Footer />
+      <FooterLanding />
     </div>
   );
 }

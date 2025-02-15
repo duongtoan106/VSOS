@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { motion, useInView } from "framer-motion"; // Import useInView
-import logo from "../assets/logo-khongchu-color-01-01.svg"; // Import logo
+import logo from "../../../assets/logo-khongchu-color-01-01.svg"; // Import logo
 
 export default function WelcomeVSOS() {
   const ref = useRef(null);

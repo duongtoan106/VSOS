@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Footer() {
+export default function FooterLanding() {
   return (
     <footer style={styles.footer}>
       <div style={styles.container}>

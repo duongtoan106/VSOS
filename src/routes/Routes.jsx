@@ -1,7 +1,9 @@
 import { Route, Routes } from "react-router-dom";
 // import PrivateRoleBasedRoute from "./PrivateRoleBasedRoute";
 import Layout from "@/containers/Layouts/Layout";
+
 import Login from "@/containers/Login/index";
+import LayoutLanding from "../components/landingPage/page/LayoutLanding";
 
 //luồng ruoting chính sẽ là component này
 const AppRoutes = () => {
@@ -11,6 +13,7 @@ const AppRoutes = () => {
       <Route path="/" element={<Layout />}>
         <Route path="/" element={<Login />} />
       </Route>
+      <Route path="/landingPage" element={<LayoutLanding />} />
     </Routes>
   );
 };

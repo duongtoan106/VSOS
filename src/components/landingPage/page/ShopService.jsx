@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import Fuchs from "../assets/img/nhotFUCHS.webp";
-import liquiNhot from "../assets/img/liquiNhot.webp";
-import nhongSenDiaDID from "../assets/img/NhongSenDia.jpg";
-import duongSenLiqui from "../assets/img/duongSenLiqui.webp";
+import Fuchs from "../../../assets/img/nhotFUCHS.webp";
+import liquiNhot from "../../../assets/img/liquiNhot.webp";
+import nhongSenDiaDID from "../../../assets/img/NhongSenDia.jpg";
+import duongSenLiqui from "../../../assets/img/duongSenLiqui.webp";
 
 const services = [
   {
