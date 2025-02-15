@@ -11,7 +11,7 @@ const AppRoutes = () => {
       {/* Route chính có Layout */}
       <Route path="/" element={<Layout />}>
         <Route path="/login" element={<Login />} />
-        <Route path="/login" element={<Register />} />
+        <Route path="/register" element={<Register />} />
       </Route>
     </Routes>
   );
