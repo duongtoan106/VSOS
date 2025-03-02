@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Search, PhoneCall } from "lucide-react";
 import { useState } from "react";
 import Button from "../Button/Button";
@@ -6,6 +6,7 @@ import Logo from "../Logo";
 
 const Header = () => {
   const [query, setQuery] = useState("");
+  const navigate = useNavigate();
 
   const navLinks = [
     {
@@ -21,7 +22,7 @@ const Header = () => {
       hover: "hover:text-[#01579B]",
     },
     {
-      to: "/services",
+      to: "/category",
       label: "DỊCH VỤ",
       color: "text-[#0288D1]",
       hover: "hover:text-[#01579B]",
@@ -57,10 +58,10 @@ const Header = () => {
       {/* Logo + Slogan */}
       <div className="flex items-center gap-3">
         <Link to="/">
-          <Logo className="w-12 h-12 transition-transform hover:scale-110" />
+          <Logo className="w-12 h-12 transition-transform hover:scale-110 block" />
         </Link>
         <div>
-          <h1 className="text-transparent bg-clip-text bg-gradient-to-r from-[#8E2DE2] to-[#D32F2F] font-semibold italic text-base">
+          <h1 className="text-transparent bg-clip-text bg-[#D32F2F] font-semibold italic text-base">
             VSOS
           </h1>
           <p className="text-[#D32F2F] text-[10px] font-semibold italic">
@@ -86,13 +87,13 @@ const Header = () => {
       {/* Navigation */}
       <nav className="hidden md:flex items-center text-xs font-semibold gap-5">
         {navLinks.map(({ to, label, color, hover }) => (
-          <Link
+          <button
             key={to}
-            to={to}
+            onClick={() => navigate(to)}
             className={`relative ${color} ${hover} transition-all after:absolute after:left-0 after:bottom-[-2px] after:w-0 after:h-[2px] after:bg-current after:transition-all hover:after:w-full`}
           >
             {label}
-          </Link>
+          </button>
         ))}
       </nav>
 
@@ -120,6 +121,7 @@ const Header = () => {
         {/* Đăng Nhập */}
         <Button
           title="Đăng Nhập"
+          onClick={() => navigate("/login")}
           className="font-semibold text-xs px-4 py-2 rounded-full transition-all border border-gray-300 bg-[#2196F3] hover:bg-gray-100"
         />
       </div>
