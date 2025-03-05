@@ -8,9 +8,39 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Đăng nhập với:", { email, password });
+
+    try {
+      const response = await fetch(
+        "https://vsos-spring-app-20250226005634.azuremicroservices.io/api/account/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: email, // Swagger yêu cầu "username"
+            password: password,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("Đăng nhập thành công:", data);
+        // Lưu token vào localStorage hoặc state
+        localStorage.setItem("token", data.token);
+        navigate("/dashboard"); // Điều hướng sau khi đăng nhập thành công
+      } else {
+        console.error("Đăng nhập thất bại:", data.message);
+        alert("Đăng nhập thất bại: " + data.message);
+      }
+    } catch (error) {
+      console.error("Lỗi kết nối:", error);
+      alert("Có lỗi xảy ra, vui lòng thử lại!");
+    }
   };
 
   const handleGoogleLogin = () => {
@@ -33,7 +63,7 @@ const Login = () => {
               Tên đăng nhập
             </label>
             <input
-              type="email"
+              type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Nhập tên đăng nhập"

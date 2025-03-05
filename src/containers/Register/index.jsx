@@ -11,13 +11,43 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Đăng ký với:", { username, phone, email, password });
-  };
 
-  const handleGoogleLogin = () => {
-    console.log("Đăng nhập bằng Google");
+    if (password !== confirmPassword) {
+      alert("Mật khẩu không khớp!");
+      return;
+    }
+
+    const requestData = {
+      role: "USER",
+      username,
+      password,
+      email,
+      phone,
+    };
+
+    try {
+      const response = await fetch(
+        "https://vsos-spring-app-20250226005634.azuremicroservices.io/api/account/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestData),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Đăng ký thất bại, vui lòng thử lại!");
+      }
+
+      alert("Đăng ký thành công!");
+      navigate("/login");
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (
@@ -92,7 +122,7 @@ const Register = () => {
 
         <div className="flex items-center justify-center mt-4">
           <button
-            onClick={handleGoogleLogin}
+            onClick={() => console.log("Đăng nhập bằng Google")}
             className="w-full py-2 flex items-center justify-center gap-3 bg-[#DB4437] text-white rounded-md hover:bg-[#C1351D]"
           >
             <FaGoogle size={18} /> <span>Đăng Nhập bằng Google</span>
