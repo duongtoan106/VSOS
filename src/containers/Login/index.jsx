@@ -32,6 +32,10 @@ const Login = () => {
         console.log("Đăng nhập thành công:", data);
         // Lưu token vào localStorage hoặc state
         localStorage.setItem("token", data.token);
+        console.log(data.role);
+
+        localStorage.setItem("role", data.role);
+        console.log("Role lưu vào localStorage:", localStorage.getItem("role")); // Kiểm tra role có lưu thành công không
         navigate("/dashboard"); // Điều hướng sau khi đăng nhập thành công
       } else {
         console.error("Đăng nhập thất bại:", data.message);
