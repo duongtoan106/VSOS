@@ -23,6 +23,7 @@
     "cors": "^2.8.5",
     "embla-carousel-react": "^8.5.1",
     "fe_vsos": "file:",
+    "firebase": "^11.4.0",
     "framer-motion": "^12.4.2",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.475.0",
