@@ -8,10 +8,12 @@ import ShopService from "./ShopService";
 import Reason from "./Reason";
 import SOSForm from "./SOSForm";
 import FooterLanding from "./FooterLanding";
+import Header from "../../Header";
 
 export default function LayoutLanding() {
   return (
     <div>
+      <Header />
       <WelcomeVSOS />
       <WelcomePanel />
       <CompanyProfile />

@@ -9,18 +9,36 @@ export default function FooterLanding() {
           <h3 style={styles.title}>VSOS - CỨU HỘ KHẨN CẤP</h3>
           <div style={styles.whiteLine}></div> {/* Dòng trắng */}
           <p style={styles.item}>
-            📞 <strong>Hotline:</strong> 000 0000 000
+            📞 <strong>Hotline:</strong> 0327 730 336
           </p>
           <p style={styles.item}>
-            ✉️ <strong>Email:</strong> VSOSCompany24/24@gmail.com
+            ✉️ <strong>Email:</strong> VSOSCompany@gmail.com
           </p>
-          <p style={styles.item}>🌍 www.VSOScompany24/24.com.vn</p>
+          {/* <p style={styles.item}>🌍 www.VSOScompany24/24.com.vn</p> */}
           <div style={styles.socialIcons}>
-            <a href="#" style={styles.icon}>
-              📘
+            <a
+              href="https://www.facebook.com/profile.php?id=61571697193047"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={styles.icon}
+            >
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg"
+                alt="Facebook"
+                style={{ width: "30px", height: "30px" }}
+              />
             </a>
-            <a href="#" style={styles.icon}>
-              🟥
+            <a
+              href="https://www.tiktok.com/@vsos_2025?is_from_webapp=1&sender_device=pc"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={styles.icon}
+            >
+              <img
+                src="https://pngimg.com/d/tiktok_PNG2.png"
+                alt="TikTok"
+                style={{ width: "30px", height: "30px", borderRadius: "50%" }}
+              />
             </a>
           </div>
         </div>
@@ -47,8 +65,31 @@ export default function FooterLanding() {
             <h3 style={styles.title}>LIÊN KẾT</h3>
             <div style={styles.whiteLine}></div> {/* Dòng trắng */}
             <ul style={styles.list}>
-              <li>Trang chủ</li>
-              <li>Giới thiệu</li>
+              <li>
+                <a
+                  href="/"
+                  style={{
+                    textDecoration: "none", // Không có gạch chân
+                    color: "inherit", // Giữ nguyên màu chữ mặc định
+                    userSelect: "none", // Không cho phép bôi đen chữ
+                  }}
+                >
+                  Trang chủ
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="/landingPage"
+                  style={{
+                    textDecoration: "none", // Không có gạch chân
+                    color: "inherit", // Giữ nguyên màu chữ mặc định
+                    userSelect: "none", // Không cho phép bôi đen chữ
+                  }}
+                >
+                  Giới thiệu
+                </a>
+              </li>
               <li>Dịch vụ</li>
               <li>Định vị GPS và cứu trợ</li>
               <li>Hình thức thanh toán</li>
