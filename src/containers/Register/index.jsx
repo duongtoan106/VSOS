@@ -2,6 +2,8 @@ import { useState } from "react";
 import { FaGoogle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "../../assets/background.png";
+import { register } from "../../constant/api";
+// import { register } from "../../api/api"; // Import API register
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -19,34 +21,13 @@ const Register = () => {
       return;
     }
 
-    const requestData = {
-      role: "USER",
-      username,
-      password,
-      email,
-      phone,
-    };
+    const result = await register({ username, phone, email, password });
 
-    try {
-      const response = await fetch(
-        "https://vsos-spring-app-20250226005634.azuremicroservices.io/api/account/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestData),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Đăng ký thất bại, vui lòng thử lại!");
-      }
-
-      alert("Đăng ký thành công!");
+    if (result.success) {
+      alert(result.message);
       navigate("/login");
-    } catch (error) {
-      alert(error.message);
+    } else {
+      alert(result.message);
     }
   };
 

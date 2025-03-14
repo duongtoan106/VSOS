@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import AllAccount from "./AllAccount";
+import ProductList from "./ProductList";
 
 const { Header, Sider, Content } = Layout;
 
@@ -33,7 +34,7 @@ const MainLayout = () => {
 
   const menuItems = [
     { key: "1", label: "All Account", roles: ["ADMIN"] },
-    { key: "2", label: "All Account", roles: ["ADMIN"] },
+    { key: "2", label: "All Product", roles: ["ADMIN", "MANAGER", "STAFF"] },
   ];
 
   // Kiểm tra xem user có quyền hiển thị menu không
@@ -61,6 +62,8 @@ const MainLayout = () => {
     switch (selectedKey) {
       case "1":
         return <AllAccount />;
+      case "2":
+        return <ProductList />;
       default:
         return <AllAccount />;
     }

@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { FaGoogle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+// import { login } from " // Import API login
 import backgroundImage from "../../assets/background.png";
+import { login } from "../../constant/api";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
@@ -12,43 +14,16 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(
-        "https://vsos-spring-app-20250226005634.azuremicroservices.io/api/account/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: email, // Swagger yêu cầu "username"
-            password: password,
-          }),
-        }
-      );
+      const data = await login(username, password); // Gọi API từ service
+      console.log("Đăng nhập thành công:", data);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        console.log("Đăng nhập thành công:", data);
-        // Lưu token vào localStorage hoặc state
-        localStorage.setItem("token", data.token);
-        console.log(data.role);
-
-        localStorage.setItem("role", data.role);
-        console.log("Role lưu vào localStorage:", localStorage.getItem("role")); // Kiểm tra role có lưu thành công không
-        navigate("/dashboard"); // Điều hướng sau khi đăng nhập thành công
-      } else {
-        console.error("Đăng nhập thất bại:", data.message);
-        alert("Đăng nhập thất bại: " + data.message);
-      }
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.role);
+      navigate("/dashboard"); // Chuyển hướng sau khi đăng nhập thành công
     } catch (error) {
-      console.error("Lỗi kết nối:", error);
-      alert("Có lỗi xảy ra, vui lòng thử lại!");
+      console.error(error.message);
+      alert(error.message);
     }
-  };
-
-  const handleGoogleLogin = () => {
-    console.log("Đăng nhập bằng Google");
   };
 
   return (
@@ -68,8 +43,8 @@ const Login = () => {
             </label>
             <input
               type="text"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               placeholder="Nhập tên đăng nhập"
               className="w-full px-4 py-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
@@ -106,16 +81,6 @@ const Login = () => {
             </button>
           </div>
         </form>
-
-        <div className="flex items-center justify-center mt-6">
-          <button
-            onClick={handleGoogleLogin}
-            className="w-full py-3 flex items-center justify-center gap-3 bg-[#DB4437] text-white rounded-md hover:bg-[#C1351D] transition-all focus:ring-4 focus:ring-red-300"
-          >
-            <FaGoogle size={20} />
-            <span>Đăng Nhập bằng Google</span>
-          </button>
-        </div>
       </div>
     </div>
   );

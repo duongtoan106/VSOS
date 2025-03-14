@@ -27,16 +27,13 @@ export default function AccountModal({ id, open, onClose }) {
 
       const token = localStorage.getItem("token");
 
-      const response = await fetch(
-        `https://vsos-spring-app-20250226005634.azuremicroservices.io/api/account/id?id=${id}`,
-        {
-          method: "GET",
-          headers: {
-            accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${id}`, {
+        method: "GET",
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);

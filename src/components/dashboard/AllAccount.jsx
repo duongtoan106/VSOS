@@ -11,6 +11,7 @@ import {
 import { Button, message, Modal, Form, Input } from "antd";
 import { useNavigate } from "react-router-dom";
 import AccountModal from "./AccountModal";
+import { fetchCustomers } from "../../constant/api";
 // // import api from "../../config/axios";
 // import DeleteUser from "./DeleteUser";
 // import AccountModal from "./AccountModal";
@@ -25,40 +26,18 @@ export default function AllAccount() {
   const navigate = useNavigate();
 
   // Fetch customer data from API
-  const fetchCustomers = async () => {
-    try {
-      const token = localStorage.getItem("token"); // Lấy token từ localStorage
-
-      if (!token) {
-        throw new Error("No authentication token found.");
-      }
-
-      const response = await fetch(
-        "https://vsos-spring-app-20250226005634.azuremicroservices.io/api/account",
-        {
-          headers: {
-            accept: "application/json",
-            Authorization: `Bearer ${token}`, // Thêm Bearer Token
-          },
-          method: "GET",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const data = await response.json(); // Chuyển đổi phản hồi thành JSON
-      setCustomers(data); // Lưu dữ liệu vào state
-      console.log(data);
-    } catch (error) {
-      console.error("Error fetching accounts:", error);
-      message.error("Failed to fetch accounts. Please try again.");
-    }
-  };
-
   useEffect(() => {
-    fetchCustomers();
+    const getCustomers = async () => {
+      try {
+        const data = await fetchCustomers();
+        setCustomers(data);
+        console.log(data);
+      } catch (error) {
+        message.error("Failed to fetch accounts. Please try again.");
+      }
+    };
+
+    getCustomers();
   }, []);
 
   // Handle viewing a customer account

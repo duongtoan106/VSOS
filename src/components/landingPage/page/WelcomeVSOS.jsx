@@ -22,42 +22,44 @@ export default function WelcomeVSOS() {
       }}
     >
       {/* Logo + Slogan với hiệu ứng xuất hiện từ trái qua */}
-      <motion.div
-        initial={{ x: -100, opacity: 0 }}
-        animate={isInView ? { x: 0, opacity: 1 } : { x: -100, opacity: 0 }}
-        transition={{ duration: 1, ease: "easeOut" }}
-        style={{
-          position: "absolute",
-          top: "20px",
-          left: "30px",
-          display: "flex",
-          alignItems: "center",
-          gap: "15px",
-        }}
-      >
-        {/* Logo */}
-        <motion.img
-          src={logo}
-          alt="VSOS Logo"
-          style={{
-            width: "150px",
-            height: "auto",
-          }}
-          whileHover={{ scale: 1.1 }} // Hiệu ứng phóng to nhẹ khi hover
-        />
-
-        {/* Slogan */}
+      {/* Slogan */}
+      <motion.a href="/">
         <motion.div
+          initial={{ x: -100, opacity: 0 }}
+          animate={isInView ? { x: 0, opacity: 1 } : { x: -100, opacity: 0 }}
+          transition={{ duration: 1, ease: "easeOut" }}
           style={{
-            fontSize: "1.5vw",
-            fontWeight: "bold",
-            color: "rgb(180,0,0)",
+            position: "absolute",
+            top: "20px",
+            left: "30px",
+            display: "flex",
+            alignItems: "center",
+            gap: "15px",
           }}
-          whileHover={{ scale: 1.05 }} // Phóng to nhẹ khi hover
         >
-          Đồng hành mọi nơi, không lo chơi vơi
+          {/* Logo */}
+          <motion.img
+            src={logo}
+            alt="VSOS Logo"
+            style={{
+              width: "150px",
+              height: "auto",
+            }}
+            whileHover={{ scale: 1.1 }} // Hiệu ứng phóng to nhẹ khi hover
+          />
+
+          <motion.div
+            style={{
+              fontSize: "1.5vw",
+              fontWeight: "bold",
+              color: "rgb(180,0,0)",
+            }}
+            whileHover={{ scale: 1.05 }} // Phóng to nhẹ khi hover
+          >
+            Đồng hành mọi nơi, không lo chơi vơi
+          </motion.div>
         </motion.div>
-      </motion.div>
+      </motion.a>
 
       {/* Nội dung chính giữa với hiệu ứng xuất hiện từ dưới lên */}
       <motion.h1
@@ -78,6 +80,29 @@ export default function WelcomeVSOS() {
           VSOS
         </motion.span>
       </motion.h1>
+      <motion.a
+        href="/"
+        style={{
+          position: "absolute",
+          bottom: "5%",
+          right: "5%",
+          fontSize: "1.2vw",
+          fontWeight: "bold",
+          color: "rgb(180,0,0)",
+          textDecoration: "none",
+          padding: "10px 20px",
+          border: "2px solid rgb(180,0,0)",
+          borderRadius: "8px",
+          transition: "0.3s",
+        }}
+        whileHover={{
+          scale: 1.1,
+          backgroundColor: "rgb(180,0,0)",
+          color: "white",
+        }}
+      >
+        Đến với trang chủ VSOS
+      </motion.a>
     </div>
   );
 }
