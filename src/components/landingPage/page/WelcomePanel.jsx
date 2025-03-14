@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
+import background from "../../../assets/img/background.jpg";
 
 export default function WelcomePanel() {
   const { ref, inView } = useInView({
@@ -45,7 +46,8 @@ export default function WelcomePanel() {
           left: 0,
           width: "100vw", // Sửa width thành 100%
           height: "100%",
-          backgroundImage: `url('https://cuuhogiaothong567.com/wp-content/uploads/2022/07/cuu-ho-118.jpg')`,
+          backgroundImage: `url(${background})`,
+
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -114,7 +116,6 @@ export default function WelcomePanel() {
           <li>✅ Giá thành hợp lý, minh bạch</li>
           <li>✅ Luôn hoạt động 24/7</li>
         </ul>
-
         <motion.button
           style={{
             marginTop: "40px",
@@ -131,6 +132,12 @@ export default function WelcomePanel() {
           }}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
+          onClick={() =>
+            window.open(
+              "https://www.facebook.com/profile.php?id=61571697193047",
+              "_blank"
+            )
+          }
         >
           📞 LIÊN HỆ NGAY
         </motion.button>

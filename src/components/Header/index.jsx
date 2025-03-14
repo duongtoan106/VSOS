@@ -1,22 +1,57 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Search, PhoneCall } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../Button/Button";
 import Logo from "../Logo";
 
+import { UserOutlined, MenuOutlined } from "@ant-design/icons";
+import { Dropdown, Menu } from "antd";
 const Header = () => {
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
+  const [role, setRole] = useState(null);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role"); // Lấy role từ localStorage
+    setIsLoggedIn(!!token);
+    setRole(role); // Lưu role vào state
+  }, []);
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token); // Nếu có token -> đã đăng nhập
+  }, []);
+
+  // Hàm đăng xuất
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // Xóa token khi logout
+    setIsLoggedIn(false);
+    navigate("/login");
+  };
+  const userMenu = [
+    {
+      key: "dashboard",
+      label: "Dashboard",
+      onClick: () => navigate("/dashboard"),
+      hidden: !["ADMIN", "MANAGER", "STAFF"].includes(role), // Ẩn nếu không có quyền
+    },
+    {
+      key: "logout",
+      label: "Đăng Xuất",
+      onClick: handleLogout,
+    },
+  ];
 
   const navLinks = [
     {
-      to: "/home",
+      to: "/",
       label: "TRANG CHỦ",
       color: "text-[#B71C1C]",
       hover: "hover:text-[#E53935]",
     },
     {
-      to: "/introduce",
+      to: "/landingPage",
       label: "GIỚI THIỆU",
       color: "text-[#0288D1]",
       hover: "hover:text-[#01579B]",
@@ -78,7 +113,7 @@ const Header = () => {
         title={
           <div className="flex items-center gap-2">
             <PhoneCall className="w-4 h-4 animate-[shake_0.5s_infinite] text-white" />
-            <span>1900 636 106</span>
+            <span>0327 730 336</span>
           </div>
         }
         className="font-semibold text-xs px-4 py-2 rounded-full bg-[#E53935] hover:bg-[#B71C1C] text-white transition-all"
@@ -86,11 +121,13 @@ const Header = () => {
 
       {/* Navigation */}
       <nav className="hidden md:flex items-center text-xs font-semibold gap-5">
-        {navLinks.map(({ to, label, color, hover }) => (
+        {navLinks.map(({ to, label }) => (
           <button
             key={to}
             onClick={() => navigate(to)}
-            className={`relative ${color} ${hover} transition-all after:absolute after:left-0 after:bottom-[-2px] after:w-0 after:h-[2px] after:bg-current after:transition-all hover:after:w-full`}
+            className={`relative ${
+              location.pathname === to ? "text-[#B71C1C]" : "text-[#0288D1]"
+            } hover:text-[#E53935] transition-all after:absolute after:left-0 after:bottom-[-2px] after:w-0 after:h-[2px] after:bg-current after:transition-all hover:after:w-full`}
           >
             {label}
           </button>
@@ -117,13 +154,28 @@ const Header = () => {
         </button>
       </form>
 
+      {/* User Section */}
       <div className="flex gap-3">
-        {/* Đăng Nhập */}
-        <Button
-          title="Đăng Nhập"
-          onClick={() => navigate("/login")}
-          className="font-semibold text-xs px-4 py-2 rounded-full transition-all border border-gray-300 bg-[#2196F3] hover:bg-gray-100"
-        />
+        {isLoggedIn ? (
+          <>
+            <Dropdown
+              menu={{ items: userMenu }}
+              trigger={["click"]}
+              placement="bottomRight"
+            >
+              <div className="flex items-center gap-2 cursor-pointer bg-blue-100 px-3 py-2 rounded-full border border-gray-300 hover:bg-blue-200 transition-all">
+                <UserOutlined className="text-xl text-gray-600" />
+                <MenuOutlined className="text-lg text-gray-600" />
+              </div>
+            </Dropdown>
+          </>
+        ) : (
+          <Button
+            title="Đăng Nhập"
+            onClick={() => navigate("/login")}
+            className="font-semibold text-xs px-4 py-2 rounded-full transition-all border border-gray-300 bg-[#2196F3] hover:bg-gray-100"
+          />
+        )}
       </div>
     </header>
   );

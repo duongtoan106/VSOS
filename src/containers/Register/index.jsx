@@ -2,6 +2,8 @@ import { useState } from "react";
 import { FaGoogle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "../../assets/background.png";
+import { register } from "../../constant/api";
+// import { register } from "../../api/api"; // Import API register
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -11,13 +13,22 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Đăng ký với:", { username, phone, email, password });
-  };
 
-  const handleGoogleLogin = () => {
-    console.log("Đăng nhập bằng Google");
+    if (password !== confirmPassword) {
+      alert("Mật khẩu không khớp!");
+      return;
+    }
+
+    const result = await register({ username, phone, email, password });
+
+    if (result.success) {
+      alert(result.message);
+      navigate("/login");
+    } else {
+      alert(result.message);
+    }
   };
 
   return (
@@ -92,7 +103,7 @@ const Register = () => {
 
         <div className="flex items-center justify-center mt-4">
           <button
-            onClick={handleGoogleLogin}
+            onClick={() => console.log("Đăng nhập bằng Google")}
             className="w-full py-2 flex items-center justify-center gap-3 bg-[#DB4437] text-white rounded-md hover:bg-[#C1351D]"
           >
             <FaGoogle size={18} /> <span>Đăng Nhập bằng Google</span>

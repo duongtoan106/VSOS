@@ -1,20 +1,29 @@
 import { useState } from "react";
 import { FaGoogle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+// import { login } from " // Import API login
 import backgroundImage from "../../assets/background.png";
+import { login } from "../../constant/api";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Đăng nhập với:", { email, password });
-  };
 
-  const handleGoogleLogin = () => {
-    console.log("Đăng nhập bằng Google");
+    try {
+      const data = await login(username, password); // Gọi API từ service
+      console.log("Đăng nhập thành công:", data);
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.role);
+      navigate("/dashboard"); // Chuyển hướng sau khi đăng nhập thành công
+    } catch (error) {
+      console.error(error.message);
+      alert(error.message);
+    }
   };
 
   return (
@@ -33,9 +42,9 @@ const Login = () => {
               Tên đăng nhập
             </label>
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               placeholder="Nhập tên đăng nhập"
               className="w-full px-4 py-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
@@ -72,16 +81,6 @@ const Login = () => {
             </button>
           </div>
         </form>
-
-        <div className="flex items-center justify-center mt-6">
-          <button
-            onClick={handleGoogleLogin}
-            className="w-full py-3 flex items-center justify-center gap-3 bg-[#DB4437] text-white rounded-md hover:bg-[#C1351D] transition-all focus:ring-4 focus:ring-red-300"
-          >
-            <FaGoogle size={20} />
-            <span>Đăng Nhập bằng Google</span>
-          </button>
-        </div>
       </div>
     </div>
   );
