@@ -19,6 +19,7 @@ const Login = () => {
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("role", data.role);
+      localStorage.setItem("userName", data.username);
       navigate("/dashboard"); // Chuyển hướng sau khi đăng nhập thành công
     } catch (error) {
       console.error(error.message);

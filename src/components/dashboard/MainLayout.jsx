@@ -34,7 +34,10 @@ const MainLayout = () => {
 
   const menuItems = [
     { key: "1", label: "All Account", roles: ["ADMIN"] },
-    { key: "2", label: "All Product", roles: ["ADMIN", "MANAGER", "STAFF"] },
+    { key: "2", label: "All Products", roles: ["ADMIN", "MANAGER", "STAFF"] },
+    { key: "3", label: "Pending Products", roles: ["ADMIN", "MANAGER"] },
+    { key: "4", label: "Sale Promotion", roles: ["ADMIN", "MANAGER", "STAFF"] },
+    { key: "5", label: "Pending Sale Promotion", roles: ["ADMIN", "MANAGER"] },
   ];
 
   // Kiểm tra xem user có quyền hiển thị menu không
@@ -64,6 +67,8 @@ const MainLayout = () => {
         return <AllAccount />;
       case "2":
         return <ProductList />;
+      case "3":
+        return <ProductList />;
       default:
         return <AllAccount />;
     }
@@ -85,6 +90,7 @@ const MainLayout = () => {
             selectedKeys={[selectedKey]}
             onClick={handleMenuClick}
             items={filteredMenuItems}
+            style={{ textAlign: "left", paddingLeft: "2px" }}
           />
         )}
       </Sider>

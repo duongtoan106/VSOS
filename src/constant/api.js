@@ -1,8 +1,11 @@
 const API_URL = "https://quick-tish-fpt123-e6533ba7.koyeb.app";
+import { uploadImage } from "../../firebaseConfig";
+import noImage from "../assets/img/noImage.jpg";
 
+import { message } from "antd";
 export const login = async (username, password) => {
   try {
-    const response = await fetch(`${API_URL}/api/account/login`, {
+    const response = await fetch(`${API_URL}/api/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -117,7 +120,7 @@ export const fetchProducts = async () => {
       throw new Error("No token found. Please log in.");
     }
 
-    const response = await fetch(`${API_URL}/api/product`, {
+    const response = await fetch(`${API_URL}/api/product/getAll`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -135,5 +138,76 @@ export const fetchProducts = async () => {
   } catch (error) {
     console.error("Failed to fetch product data:", error);
     throw new Error("Failed to fetch product data");
+  }
+};
+export const createProduct = async (
+  values,
+  imageFile,
+  fetchProducts,
+  handleCloseModal
+) => {
+  let imageUrl = noImage;
+
+  try {
+    // Kiểm tra dữ liệu đầu vào
+    if (
+      !values ||
+      !values.productName ||
+      !values.productDescription ||
+      !values.productPrice
+    ) {
+      throw new Error("⚠️ Thiếu thông tin sản phẩm. Vui lòng kiểm tra lại.");
+    }
+
+    // Upload ảnh nếu có
+    if (imageFile) {
+      console.log("📸 File ảnh trước khi upload:", imageFile);
+      console.log("📤 Đang gọi uploadImage...");
+      imageUrl = await uploadImage(imageFile);
+      console.log("✅ Ảnh đã upload, URL:", imageUrl);
+    }
+
+    // Chuẩn bị payload gửi lên API
+    const payload = {
+      id: 0, // ID do server tự tạo
+      image: imageUrl, // URL ảnh từ Firebase Storage hoặc giá trị mặc định
+      name: values.productName.trim(),
+      description: values.productDescription.trim(),
+      price: String(values.productPrice).trim(), // Đảm bảo là chuỗi, nếu API yêu cầu số: Number(values.productPrice)
+      createdBy: localStorage.getItem("userName") || "Admin", // Lấy username hoặc mặc định "Admin"
+      status: "TRUE", // Mặc định TRUE
+      pending: "TRUE", // Mặc định TRUE
+    };
+
+    console.log("📡 Payload sent to API:", JSON.stringify(payload, null, 2));
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("⚠️ Không tìm thấy token. Vui lòng đăng nhập lại.");
+    }
+
+    const response = await fetch(`${API_URL}/api/product`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // Thêm token vào headers
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`🚨 API Error ${response.status}: ${errorText}`);
+    }
+
+    const responseData = await response.json();
+    console.log("✅ API Response:", responseData);
+
+    message.success("🎉 Tạo sản phẩm thành công!");
+    fetchProducts(); // Cập nhật danh sách sản phẩm
+    handleCloseModal(); // Đóng modal sau khi tạo xong
+  } catch (error) {
+    console.error("🔥 Lỗi khi tạo sản phẩm:", error);
+    message.error(error.message || "Tạo sản phẩm thất bại. Vui lòng thử lại.");
   }
 };

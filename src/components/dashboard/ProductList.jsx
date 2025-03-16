@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import noImage from "../../assets/img/noImage.jpg";
 
 import { app } from "../../../firebaseConfig";
+import { createProduct, fetchProducts } from "../../constant/api";
 
 const storage = getStorage(app); // Initialize Firebase storage
 const { Option } = Select;
@@ -31,38 +32,21 @@ export default function ProductList() {
   const [imageFile, setImageFile] = useState(null);
   const [error, setError] = useState(null); // Define error state
 
-  // const fetchCategories = async () => {
-  //   try {
-  //     const response = await api.get("/api/categories/getAllCategories");
-  //     const fetchedCategories = response.data.map((category) => ({
-  //       id: category.categoryId,
-  //       name: category.categoryName,
-  //     }));
-  //     setCategories(fetchedCategories);
-  //   } catch (error) {
-  //     console.error("Error fetching categories:", error);
-  //     setError("Failed to fetch categories");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get("/api/products/getAllProducts");
-      setProducts(response.data);
-    } catch (error) {
-      console.error("Failed to fetch product data:", error);
-      setError("Failed to fetch product data");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchProducts();
-    // fetchCategories();
+    const getProducts = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchProducts();
+        console.log("Dữ liệu sản phẩm nhận được:", data);
+        setProducts(data);
+      } catch (error) {
+        console.error("Lỗi khi tải sản phẩm:", error);
+        setError("Không thể tải sản phẩm");
+      } finally {
+        setLoading(false);
+      }
+    };
+    getProducts();
   }, []);
 
   const handleOpenModal = () => {
@@ -75,41 +59,89 @@ export default function ProductList() {
   const handleCloseModal = () => setIsModalVisible(false);
 
   const handleImageChange = (e) => {
+    console.log("📸 handleImageChange called!");
     const file = e.target.files[0];
+
     if (file) {
+      console.log("🖼️ File selected:", file.name);
       setImageFile(file);
-      setImagePreview(URL.createObjectURL(file)); // Show image preview
+      setImagePreview(URL.createObjectURL(file));
+    } else {
+      console.error("🚫 No file selected!");
     }
   };
 
   const uploadImage = async (file) => {
-    const storageRef = ref(storage, `products/${file.name}`);
-    await uploadBytes(storageRef, file);
-    return getDownloadURL(storageRef); // Return the image URL
-  };
-
-  const handleFormSubmit = async (values) => {
-    const userId = localStorage.getItem("userId");
-    let imageUrl = noImage;
-
-    if (imageFile) {
-      imageUrl = await uploadImage(imageFile);
+    if (!file) {
+      console.error("🚫 No file provided!");
+      return null;
     }
 
-    const payload = {
-      ...values,
-      userId,
-      isActive: "waiting",
-      image: imageUrl,
-    };
-
     try {
-      await api.post("/api/products/createProduct", payload);
-      message.success("Product created successfully!");
-      fetchProducts();
-      handleCloseModal();
+      console.log("⏳ Uploading file:", file.name);
+      const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
+      const snapshot = await uploadBytes(storageRef, file);
+
+      console.log("✅ Upload successful, fetching URL...");
+      const url = await getDownloadURL(snapshot.ref);
+      console.log("🌐 Image URL:", url);
+
+      return url;
     } catch (error) {
-      message.error("Failed to create product. Please try again.");
+      console.error("🔥 Upload failed:", error);
+      message.error(`Upload failed: ${error.message}`);
+      throw new Error("Lỗi khi tải ảnh lên. Vui lòng thử lại.");
+    }
+  };
+
+  const [isLoading, setIsLoading] = useState(false); // State để theo dõi trạng thái loading
+
+  const handleFormSubmit = async (values) => {
+    setIsLoading(true); // Bắt đầu loading
+    try {
+      console.log("📥 Dữ liệu form:", values);
+
+      if (
+        !values.productName ||
+        !values.productDescription ||
+        !values.productPrice
+      ) {
+        message.error("⚠️ Thiếu thông tin sản phẩm. Vui lòng kiểm tra lại.");
+        setIsLoading(false);
+        return;
+      }
+
+      let imageUrl = noImage; // Mặc định ảnh nếu không có
+      if (imageFile) {
+        console.log("📸 Uploading image...");
+        imageUrl = await uploadImage(imageFile);
+        if (!imageUrl) {
+          message.error("⚠️ Lỗi tải ảnh lên.");
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      const productData = {
+        image: imageUrl,
+        name: values.productName,
+        description: values.productDescription,
+        price: values.productPrice.toString(),
+        createdBy: localStorage.getItem("username") || "Admin",
+        status: "TRUE",
+        pending: "TRUE",
+      };
+
+      console.log("📤 Payload being sent:", productData);
+
+      await createProduct(values, imageFile, fetchProducts, handleCloseModal);
+
+      message.success("🎉 Sản phẩm đã được tạo thành công!");
+    } catch (error) {
+      console.error("🔥 Lỗi khi tạo sản phẩm:", error.response?.data || error);
+      message.error("⚠️ Tạo sản phẩm thất bại. Vui lòng thử lại.");
+    } finally {
+      setIsLoading(false); // Dừng loading sau khi hoàn tất
     }
   };
 
@@ -193,23 +225,45 @@ export default function ProductList() {
           </TableHead>
           <TableBody>
             {products.map((product) => (
-              <TableRow key={product.productId}>
-                <TableCell align="center">{product.productId}</TableCell>
-                <TableCell align="left">{product.productName}</TableCell>
-                <TableCell align="left">{product.productDescription}</TableCell>
-                <TableCell align="center">{product.productPrice}</TableCell>
-                <TableCell
-                  align="center"
-                  style={{ color: "Green", fontWeight: "bold" }}
-                >
-                  {product.isActive ? "Active" : "Inactive"}
+              <TableRow key={product.id || product.productId}>
+                {" "}
+                {/* Đảm bảo key đúng */}
+                <TableCell align="center">
+                  {product.id || product.productId}
                 </TableCell>
-                <TableCell align="center">{product.User.username}</TableCell>
+                <TableCell align="left">
+                  {product.name || product.productName}
+                </TableCell>
+                <TableCell align="left">
+                  {product.description || product.productDescription}
+                </TableCell>
+                <TableCell align="center">
+                  {product.price || product.productPrice}
+                </TableCell>
+                <TableCell align="center" style={{ fontWeight: "bold" }}>
+                  {product.status === "TRUE" && product.pending === "TRUE" ? (
+                    <span style={{ color: "orange" }}>🕒 Chờ duyệt</span>
+                  ) : product.status === "TRUE" &&
+                    product.pending === "FALSE" ? (
+                    <span style={{ color: "green" }}>🟢 Đang bán</span>
+                  ) : product.status === "FALSE" &&
+                    product.pending === "TRUE" ? (
+                    <span style={{ color: "red" }}>⏳ Chờ ẩn</span>
+                  ) : (
+                    <span style={{ color: "gray" }}>🚫 Đã ẩn</span>
+                  )}
+                </TableCell>
+                <TableCell align="center">
+                  {product.createdBy || "Unknown"}{" "}
+                  {/* Kiểm tra User tránh lỗi */}
+                </TableCell>
                 <TableCell align="center">
                   <Button
                     style={{ color: "rgb(180,0,0)" }}
                     onClick={() =>
-                      navigate(`/ProductDetails/${product.productId}`)
+                      navigate(
+                        `/ProductDetails/${product.id || product.productId}`
+                      )
                     }
                   >
                     View
@@ -217,7 +271,9 @@ export default function ProductList() {
                   {localStorage.getItem("usertype") === "Manager" && (
                     <Button
                       style={{ color: "red", marginLeft: "8px" }}
-                      onClick={() => handleRemoveProduct(product.productId)}
+                      onClick={() =>
+                        handleRemoveProduct(product.id || product.productId)
+                      }
                     >
                       Remove
                     </Button>
@@ -231,7 +287,7 @@ export default function ProductList() {
 
       <Modal
         title="Create New Product"
-        visible={isModalVisible}
+        open={isModalVisible}
         onCancel={handleCloseModal}
         footer={null}
         width={1000}
@@ -239,7 +295,7 @@ export default function ProductList() {
         <div style={{ display: "flex", gap: "20px" }}>
           <div style={{ flex: "1" }}>
             <Form form={form} onFinish={handleFormSubmit} layout="vertical">
-              <Form.Item
+              {/* <Form.Item
                 name="categoryId"
                 label="Category"
                 rules={[
@@ -256,7 +312,7 @@ export default function ProductList() {
                     </Option>
                   ))}
                 </Select>
-              </Form.Item>
+              </Form.Item> */}
               <Form.Item
                 name="productName"
                 label="Product Name"
@@ -287,11 +343,11 @@ export default function ProductList() {
                           new Error("Product Price can't be less than 1!")
                         );
                       }
-                      if (value > 9999) {
-                        return Promise.reject(
-                          new Error("Product price can't exceed 9999!")
-                        );
-                      }
+                      // if (value > 9999) {
+                      //   return Promise.reject(
+                      //     new Error("Product price can't exceed 9999!")
+                      //   );
+                      // }
                       return Promise.resolve();
                     },
                   },
