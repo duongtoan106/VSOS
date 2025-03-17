@@ -58,7 +58,7 @@ const Header = () => {
     },
     {
       to: "/category",
-      label: "DỊCH VỤ",
+      label: "CỬA HÀNG VSOS",
       color: "text-[#0288D1]",
       hover: "hover:text-[#01579B]",
     },
@@ -74,18 +74,18 @@ const Header = () => {
       color: "text-[#0288D1]",
       hover: "hover:text-[#01579B]",
     },
-    {
-      to: "/community",
-      label: "CỘNG ĐỒNG",
-      color: "text-[#B0BEC5]",
-      hover: "hover:text-[#78909C]",
-    },
-    {
-      to: "/policy",
-      label: "CHÍNH SÁCH",
-      color: "text-[#B0BEC5]",
-      hover: "hover:text-[#78909C]",
-    },
+    // {
+    //   to: "/community",
+    //   label: "CỘNG ĐỒNG",
+    //   color: "text-[#B0BEC5]",
+    //   hover: "hover:text-[#78909C]",
+    // },
+    // {
+    //   to: "/policy",
+    //   label: "CHÍNH SÁCH",
+    //   color: "text-[#B0BEC5]",
+    //   hover: "hover:text-[#78909C]",
+    // },
   ];
 
   return (

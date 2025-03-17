@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Spin, Alert } from "antd";
+import { fetchAccountDetails } from "../../constant/api";
 
 export default function AccountModal({ id, open, onClose }) {
   const [account, setAccount] = useState(null);
@@ -8,48 +9,59 @@ export default function AccountModal({ id, open, onClose }) {
 
   // Khi modal mở và có ID, gọi API
   useEffect(() => {
-    console.log("Modal open:", open, "ID received:", id);
     if (open && id) {
-      fetchAccountDetails(id);
+      fetchAccount();
     }
   }, [open, id]);
 
-  const fetchAccountDetails = async (id) => {
-    if (!id) {
-      console.error("Error: ID is undefined!");
-      return;
-    }
-
+  const fetchAccount = async () => {
     try {
       setLoading(true);
-      setError(null);
-      console.log("Fetching account details for ID:", id);
-
-      const token = localStorage.getItem("token");
-
-      const response = await fetch(`${id}`, {
-        method: "GET",
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("Fetched data:", data);
-
+      const data = await fetchAccountDetails(id);
       setAccount(data);
     } catch (error) {
-      console.error("Error fetching account details:", error);
       setError("Failed to fetch account details.");
     } finally {
       setLoading(false);
     }
   };
+
+  // const fetchAccountDetails = async (id) => {
+  //   if (!id) {
+  //     console.error("Error: ID is undefined!");
+  //     return;
+  //   }
+
+  //   try {
+  //     setLoading(true);
+  //     setError(null);
+  //     console.log("Fetching account details for ID:", id);
+
+  //     const token = localStorage.getItem("token");
+
+  //     const response = await fetch(`${id}`, {
+  //       method: "GET",
+  //       headers: {
+  //         accept: "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! Status: ${response.status}`);
+  //     }
+
+  //     const data = await response.json();
+  //     console.log("Fetched data:", data);
+
+  //     setAccount(data);
+  //   } catch (error) {
+  //     console.error("Error fetching account details:", error);
+  //     setError("Failed to fetch account details.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <Modal
@@ -94,7 +106,16 @@ export default function AccountModal({ id, open, onClose }) {
             }
           /> */}
           <InfoRow label="Phone" value={account?.phone} />
-          <InfoRow label="Address" value={account?.userAddress} />
+          <InfoRow
+            label="Status"
+            value={
+              account?.enabled ? (
+                <span style={{ color: "green" }}>Active</span>
+              ) : (
+                <span style={{ color: "red" }}>Inactive</span>
+              )
+            }
+          />
         </div>
       )}
     </Modal>

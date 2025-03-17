@@ -3,6 +3,8 @@ import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import AllAccount from "./AllAccount";
 import ProductList from "./ProductList";
+import PendingList from "./PendingList";
+import SalePromotionList from "./SalePromotionList";
 
 const { Header, Sider, Content } = Layout;
 
@@ -68,7 +70,9 @@ const MainLayout = () => {
       case "2":
         return <ProductList />;
       case "3":
-        return <ProductList />;
+        return <PendingList />;
+      case "4":
+        return <SalePromotionList />;
       default:
         return <AllAccount />;
     }

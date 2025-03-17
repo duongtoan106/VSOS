@@ -38,7 +38,7 @@ export const register = async ({ username, phone, email, password }) => {
   };
 
   try {
-    const response = await fetch(`${API_URL}/api/account/register`, {
+    const response = await fetch(`${API_URL}/api/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -83,19 +83,17 @@ export const fetchCustomers = async () => {
     throw error; // Ném lỗi để xử lý bên ngoài
   }
 };
+
 export const fetchAccountDetails = async (id) => {
   if (!id) {
-    throw new Error("Error: ID is undefined!");
+    console.error("Error: ID is undefined!");
+    throw new Error("ID is required");
   }
 
   try {
     const token = localStorage.getItem("token");
 
-    if (!token) {
-      throw new Error("No authentication token found.");
-    }
-
-    const response = await fetch(`${API_URL}/api/account/${id}`, {
+    const response = await fetch(`${API_URL}/api/id?id=${id}`, {
       method: "GET",
       headers: {
         accept: "application/json",
@@ -107,12 +105,13 @@ export const fetchAccountDetails = async (id) => {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    return await response.json(); // Trả về dữ liệu
+    return await response.json();
   } catch (error) {
     console.error("Error fetching account details:", error);
     throw error;
   }
 };
+
 export const fetchProducts = async () => {
   try {
     const token = localStorage.getItem("token"); // Lấy token từ localStorage
@@ -209,5 +208,84 @@ export const createProduct = async (
   } catch (error) {
     console.error("🔥 Lỗi khi tạo sản phẩm:", error);
     message.error(error.message || "Tạo sản phẩm thất bại. Vui lòng thử lại.");
+  }
+};
+export const fetchSalePromotions = async () => {
+  try {
+    const token = localStorage.getItem("token"); // Lấy token từ localStorage
+
+    if (!token) {
+      throw new Error("No authentication token found.");
+    }
+
+    const response = await fetch(`${API_URL}/api/sale-promotion`, {
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${token}`, // Thêm Bearer Token
+      },
+      method: "GET",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    return await response.json(); // Trả về dữ liệu JSON
+  } catch (error) {
+    console.error("Error fetching sale promotions:", error);
+    throw error; // Ném lỗi để xử lý bên ngoài
+  }
+};
+export const createSalePromotion = async (promotionData) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("Authentication required");
+    }
+
+    const response = await fetch(`${API_URL}/api/sale-promotion`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(promotionData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to create sale promotion");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error creating sale promotion:", error);
+    throw error;
+  }
+};
+export const fetchProductDetails = async (id) => {
+  if (!id) {
+    console.error("Error: ID is undefined!");
+    throw new Error("ID is required");
+  }
+
+  try {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(`${API_URL}/api/product/${id}`, {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching product details:", error);
+    throw error;
   }
 };

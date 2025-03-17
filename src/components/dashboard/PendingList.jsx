@@ -16,41 +16,34 @@ import { useNavigate } from "react-router-dom";
 import noImage from "../../assets/img/noImage.jpg";
 
 import { app } from "../../../firebaseConfig";
-import {
-  createProduct,
-  fetchProductDetails,
-  fetchProducts,
-} from "../../constant/api";
+import { createProduct, fetchProducts } from "../../constant/api";
 
 const storage = getStorage(app); // Initialize Firebase storage
 const { Option } = Select;
 
-export default function ProductList() {
+export default function PendingList() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  // const [isModalVisible, setIsModalVisible] = useState(false);
-  // const [form] = Form.useForm();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [form] = Form.useForm();
   const navigate = useNavigate();
-  // const [imagePreview, setImagePreview] = useState(noImage);
+  const [imagePreview, setImagePreview] = useState(noImage);
   const [categories, setCategories] = useState([]);
   const [imageFile, setImageFile] = useState(null);
   const [error, setError] = useState(null); // Define error state
-  // const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
-
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isViewMode, setIsViewMode] = useState(false); // true: View, false: Create
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
-  const [form] = Form.useForm();
-
   useEffect(() => {
     const getProducts = async () => {
       try {
         setLoading(true);
         const data = await fetchProducts();
         console.log("Dữ liệu sản phẩm nhận được:", data);
-        setProducts(data);
+
+        // Lọc sản phẩm có pending = "TRUE"
+        const pendingProducts = data.filter(
+          (product) => product.pending === "TRUE"
+        );
+
+        setProducts(pendingProducts);
       } catch (error) {
         console.error("Lỗi khi tải sản phẩm:", error);
         setError("Không thể tải sản phẩm");
@@ -60,34 +53,11 @@ export default function ProductList() {
     };
     getProducts();
   }, []);
-
   const handleOpenModal = () => {
     form.resetFields();
     setImagePreview(noImage);
     setImageFile(null); // Reset image file
     setIsModalVisible(true);
-  };
-  const modalOverlayStyle = {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100vw",
-    height: "100vh",
-    background: "rgba(0, 0, 0, 0.3)", // Nền mờ trong suốt
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 1000,
-  };
-
-  const modalContentStyle = {
-    background: "white",
-    padding: "20px",
-    borderRadius: "10px",
-    maxWidth: "600px", // Giới hạn chiều rộng
-    maxHeight: "80vh", // Giới hạn chiều cao
-    overflowY: "auto", // Cuộn khi nội dung quá dài
-    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
   };
 
   const handleCloseModal = () => setIsModalVisible(false);
@@ -179,45 +149,17 @@ export default function ProductList() {
     }
   };
 
-  // const handleRemoveProduct = async (productId) => {
-  //   try {
-  //     await api.post(`/api/products/updateProductActiveStatus/${productId}`, {
-  //       isActive: "inactive",
-  //     });
-  //     message.success("Product removed successfully!");
-  //     fetchProducts();
-  //   } catch (error) {
-  //     console.error("Failed to remove product:", error);
-  //     message.error("Failed to remove product. Please try again.");
-  //   }
-  // };
-  const handleViewProduct = async (productId) => {
+  const handleRemoveProduct = async (productId) => {
     try {
-      console.log("🔍 Fetching details for product ID:", productId);
-      const data = await fetchProductDetails(productId); // Gọi API lấy dữ liệu sản phẩm
-      console.log("✅ Product details:", data);
-
-      setSelectedProduct(data); // Cập nhật state sản phẩm
-      form.setFieldsValue({
-        productName: data.name,
-        productDescription: data.description,
-        productPrice: data.price,
+      await api.post(`/api/products/updateProductActiveStatus/${productId}`, {
+        isActive: "inactive",
       });
-
-      setImagePreview(data.image || noImage); // Nếu có ảnh thì hiển thị
-      setIsViewMode(true); // Chuyển sang chế độ View
-      setIsModalVisible(true); // Mở modal
+      message.success("Product removed successfully!");
+      fetchProducts();
     } catch (error) {
-      console.error("❌ Lỗi khi tải thông tin sản phẩm:", error);
-      message.error("Không thể tải thông tin sản phẩm.");
+      console.error("Failed to remove product:", error);
+      message.error("Failed to remove product. Please try again.");
     }
-  };
-  const handleOpenCreateModal = () => {
-    form.resetFields(); // Xóa dữ liệu cũ
-    setSelectedProduct(null);
-    setImagePreview(null);
-    setIsViewMode(false); // Chế độ Create
-    setIsModalVisible(true);
   };
 
   if (loading) return <CircularProgress style={{ margin: "20px auto" }} />;
@@ -323,12 +265,13 @@ export default function ProductList() {
                   <Button
                     style={{ color: "rgb(180,0,0)" }}
                     onClick={() =>
-                      handleViewProduct(product.id || product.productId)
+                      navigate(
+                        `/ProductDetails/${product.id || product.productId}`
+                      )
                     }
                   >
                     View
                   </Button>
-
                   {localStorage.getItem("usertype") === "Manager" && (
                     <Button
                       style={{ color: "red", marginLeft: "8px" }}
