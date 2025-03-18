@@ -1,6 +1,7 @@
 const API_URL = "https://quick-tish-fpt123-e6533ba7.koyeb.app";
 import { uploadImage } from "../../firebaseConfig";
 import noImage from "../assets/img/noImage.jpg";
+const token = localStorage.getItem("token"); // Lấy token từ localStorage
 
 import { message } from "antd";
 export const login = async (username, password) => {
@@ -57,30 +58,56 @@ export const register = async ({ username, phone, email, password }) => {
 };
 // src/api.js
 
+// export const fetchCustomers = async () => {
+//   const token = localStorage.getItem("token");
+
+//   if (!token) {
+//     console.warn("No authentication token found.");
+//     return null; // Hoặc có thể trả về một giá trị mặc định
+//   }
+
+//   try {
+//     const response = await fetch(`${API_URL}/api/account`, {
+//       method: "GET",
+//       headers: {
+//         Accept: "application/json",
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
+
+//     if (!response.ok) {
+//       const errorData = await response.json();
+//       throw new Error(
+//         `HTTP error! Status: ${response.status} - ${
+//           errorData.message || "Unknown error"
+//         }`
+//       );
+//     }
+
+//     return await response.json();
+//   } catch (error) {
+//     console.error("Error fetching customers:", error.message);
+//     return null; // Hoặc throw error để xử lý ở nơi gọi hàm
+//   }
+// };
 export const fetchCustomers = async () => {
   try {
-    const token = localStorage.getItem("token"); // Lấy token từ localStorage
-
-    if (!token) {
-      throw new Error("No authentication token found.");
-    }
-
     const response = await fetch(`${API_URL}/api/account`, {
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${token}`, // Thêm Bearer Token
-      },
       method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+      throw new Error("Failed to fetch customers");
     }
 
-    return await response.json(); // Trả về dữ liệu JSON
+    return (await response.json()) || []; // Trả về [] nếu không có dữ liệu
   } catch (error) {
-    console.error("Error fetching accounts:", error);
-    throw error; // Ném lỗi để xử lý bên ngoài
+    console.error("Error fetching customers:", error);
+    return []; // Tránh trả về null
   }
 };
 
@@ -286,6 +313,73 @@ export const fetchProductDetails = async (id) => {
     return await response.json();
   } catch (error) {
     console.error("Error fetching product details:", error);
+    throw error;
+  }
+};
+// api.js
+export const approveProduct = async (id) => {
+  console.log("Gọi API duyệt sản phẩm với ID:", id);
+
+  try {
+    const response = await fetch(
+      `${API_URL}/api/product/changeStatus/${id}?action=approve`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // Lấy token từ localStorage hoặc context
+        },
+      }
+    );
+
+    console.log("Response nhận được:", response);
+
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      throw new Error(
+        `Lỗi API: ${response.status} - ${data?.message || "Không xác định"}`
+      );
+    }
+
+    console.log("API Response:", data);
+    return data;
+  } catch (error) {
+    console.error("Lỗi khi duyệt sản phẩm:", error);
+    alert(`Có lỗi xảy ra: ${error.message}`);
+    throw error;
+  }
+};
+export const rejectProduct = async (id) => {
+  console.log("Gọi API duyệt sản phẩm với ID:", id);
+
+  try {
+    const response = await fetch(
+      `${API_URL}/api/product/changeStatus/${id}?action=reject`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // Lấy token từ localStorage hoặc context
+        },
+      }
+    );
+
+    console.log("Response nhận được:", response);
+
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      throw new Error(
+        `Lỗi API: ${response.status} - ${data?.message || "Không xác định"}`
+      );
+    }
+
+    console.log("API Response:", data);
+    return data;
+  } catch (error) {
+    console.error("Lỗi khi duyệt sản phẩm:", error);
+    alert(`Có lỗi xảy ra: ${error.message}`);
     throw error;
   }
 };
