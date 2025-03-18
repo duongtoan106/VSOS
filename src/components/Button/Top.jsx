@@ -5,12 +5,16 @@ const Top = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const toggleVisibility = () => {
-      setIsVisible(window.scrollY > 300);
+    const handleScroll = () => {
+      const shouldBeVisible = window.scrollY > 300;
+      if (shouldBeVisible !== isVisible) {
+        setIsVisible(shouldBeVisible);
+      }
     };
-    window.addEventListener("scroll", toggleVisibility);
-    return () => window.removeEventListener("scroll", toggleVisibility);
-  }, []);
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isVisible]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -19,16 +23,17 @@ const Top = () => {
   return (
     <button
       onClick={scrollToTop}
-      className={`fixed bottom-6 right-6 bg-[#FFDCAB] text-[#AB6B2E] shadow-lg 
-      p-3 rounded-full transition-all duration-300 flex items-center justify-center
-      hover:bg-[#FFC785] hover:shadow-xl active:scale-90 
+      aria-label="Lên đầu trang"
+      className={`fixed bottom-2.5 right-2.5 md:bottom-4 md:right-4 bg-[#FF6B6B] text-[#FFFFFF] 
+      shadow-md p-1.5 md:p-2 rounded-full transition-all duration-300 flex items-center justify-center
+      hover:bg-[#E63946] hover:shadow-lg active:scale-90 font-merriweather
       ${
         isVisible
           ? "opacity-100 translate-y-0"
-          : "opacity-0 translate-y-4 pointer-events-none"
+          : "opacity-0 translate-y-3 pointer-events-none"
       }`}
     >
-      <ArrowUp size={22} />
+      <ArrowUp size={16} className="md:size-18" />
     </button>
   );
 };

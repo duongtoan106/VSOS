@@ -7,13 +7,10 @@ const Logo = () => {
   return (
     <button
       onClick={() => navigate("/")}
-      className="w-28 h-28 flex items-center justify-center cursor-pointer rounded-full overflow-hidden hover:scale-105 transition-transform duration-300"
+      aria-label="Go to homepage"
+      className="w-28 h-28 rounded-full overflow-hidden transition-transform duration-300 group hover:scale-105"
     >
-      <img
-        className="w-full h-full object-contain p-0 m-0"
-        src={logo}
-        alt="Logo"
-      />
+      <img className="w-full h-full object-contain" src={logo} alt="Logo" />
     </button>
   );
 };

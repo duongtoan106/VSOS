@@ -3,7 +3,8 @@ import Layout from "@/containers/Layouts/Layout";
 import Login from "@/containers/Login/index";
 import Register from "@/containers/Register/index";
 import HomeLayout from "../containers/Layouts/HomeLayout";
-import Category from "../containers/Category";
+import Category from "../containers/Category/index";
+import Order from "../containers/Order/index";
 import LayoutLanding from "../components/landingPage/page/LayoutLanding";
 import MainLayout from "../components/dashboard/MainLayout";
 import PrivateRoleBasedRoute from "./PrivateRoleBasedRoute"; // Import chặn role
@@ -17,6 +18,7 @@ const AppRoutes = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/category" element={<Category />} />
+        <Route path="/order" element={<Order />} />
 
         {/* Chặn truy cập dashboard */}
         <Route

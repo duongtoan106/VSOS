@@ -1,11 +1,11 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Search, PhoneCall } from "lucide-react";
 import { useEffect, useState } from "react";
 import Button from "../Button/Button";
 import Logo from "../Logo";
 
 import { UserOutlined, MenuOutlined } from "@ant-design/icons";
-import { Dropdown, Menu } from "antd";
+import { Dropdown } from "antd";
 const Header = () => {
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
@@ -36,6 +36,12 @@ const Header = () => {
       onClick: () => navigate("/dashboard"),
       hidden: !["ADMIN", "MANAGER", "STAFF"].includes(role), // Ẩn nếu không có quyền
     },
+    {
+      key: "cart",
+      label: "Đơn Hàng Của Bạn",
+      onClick: () => navigate("/order"),
+    },
+
     {
       key: "logout",
       label: "Đăng Xuất",

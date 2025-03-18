@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function FooterLanding() {
   return (
     <footer style={styles.footer}>
