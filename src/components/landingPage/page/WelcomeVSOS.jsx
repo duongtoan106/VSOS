@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { motion, useInView } from "framer-motion"; // Import useInView
 import logo from "../../../assets/logo-khongchu-color-01-01.svg"; // Import logo
 

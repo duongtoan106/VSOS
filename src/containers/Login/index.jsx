@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { FaGoogle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 // import { login } from " // Import API login
 import backgroundImage from "../../assets/background.png";
