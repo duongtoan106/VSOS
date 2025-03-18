@@ -1,203 +1,206 @@
 import React, { useEffect, useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Button,
-} from "@mui/material";
-import { fetchSalePromotions, createSalePromotion } from "../../constant/api";
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-} from "@mui/material";
+import { Table, Tag, Button, Modal, List } from "antd";
+import { Box, Typography } from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
+import SalePromotionModal from "./SalePromotionModal"; // Import modal
+
+const API_URL = "https://quick-tish-fpt123-e6533ba7.koyeb.app";
 
 const SalePromotionList = () => {
-  const [salePromotions, setSalePromotions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    discountPercentage: "",
-    discountAmount: "",
-    createdAt: new Date().toISOString(),
-    endAt: "",
-    status: true,
-    pending: true,
-  });
+  const [promotions, setPromotions] = useState([]);
+  const [filteredPromotions, setFilteredPromotions] = useState([]);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSaleModalOpen, setIsSaleModalOpen] = useState(false); // Thêm state này
 
   useEffect(() => {
-    getSalePromotions();
+    fetchPromotions();
   }, []);
 
-  const getSalePromotions = async () => {
+  const fetchPromotions = async () => {
     try {
-      setLoading(true);
-      const data = await fetchSalePromotions();
-      setSalePromotions(data);
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async () => {
-    try {
-      await createSalePromotion(formData);
-      alert("Sale Promotion Created Successfully!");
-      setOpen(false);
-      getSalePromotions(); // Refresh danh sách sau khi tạo
-      setFormData({
-        discountPercentage: "",
-        discountAmount: "",
-        createdAt: new Date().toISOString(),
-        endAt: "",
-        status: true,
-        pending: true,
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_URL}/api/sale-promotion`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch promotions");
+      }
+
+      const data = await response.json();
+      setPromotions(data);
+      setFilteredPromotions(data);
     } catch (error) {
-      alert("Failed to create sale promotion");
+      console.error("Error fetching promotions:", error);
     }
   };
 
-  if (loading) return <p>Loading promotions...</p>;
-  if (error) return <p>Error: {error}</p>;
+  const handleFilter = () => {
+    const filtered = promotions.filter((promo) => {
+      const promoStart = dayjs(promo.createdAt);
+      const promoEnd = dayjs(promo.endAt);
+
+      const isAfterStart = startDate ? promoStart.isAfter(startDate) : true;
+      const isBeforeEnd = endDate ? promoEnd.isBefore(endDate) : true;
+
+      return isAfterStart && isBeforeEnd;
+    });
+
+    setFilteredPromotions(filtered);
+  };
+
+  const handleViewProducts = (products) => {
+    setSelectedProducts(products);
+    setIsModalOpen(true);
+  };
 
   return (
-    <>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => setOpen(true)}
-        style={{ marginBottom: "10px" }}
-      >
-        Create Sale Promotion
-      </Button>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <Box sx={{ padding: 3 }}>
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: "bold",
+            textAlign: "center",
+            color: "#1890ff",
+            marginBottom: 3,
+            textTransform: "uppercase",
+            letterSpacing: 1.5,
+          }}
+        >
+          Sale Promotion List
+        </Typography>
 
-      <TableContainer component={Paper}>
-        <Table aria-label="sale promotion table">
-          <TableHead>
-            <TableRow>
-              {[
-                "ID",
-                "Discount %",
-                "Discount Amount",
-                "Created At",
-                "End At",
-                "Status",
-                "Pending",
-                "Action",
-              ].map((header, index) => (
-                <TableCell
-                  key={index}
-                  style={{ fontWeight: "bold", color: "rgb(180,0,0)" }}
-                  align="center"
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginBottom: 2,
+          }}
+        >
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <DatePicker
+              label="Start Date"
+              value={startDate}
+              onChange={setStartDate}
+            />
+            <DatePicker
+              label="End Date"
+              value={endDate}
+              onChange={setEndDate}
+            />
+            <Button type="primary" onClick={handleFilter}>
+              Apply Filter
+            </Button>
+          </Box>
+          <Button type="primary" onClick={() => setIsSaleModalOpen(true)}>
+            Create Promotion
+          </Button>
+        </Box>
+
+        <Table
+          columns={[
+            {
+              title: "ID",
+              dataIndex: "id",
+              key: "id",
+            },
+            {
+              title: "Discount %",
+              dataIndex: "discountPercentage",
+              key: "discountPercentage",
+              render: (text) => <Tag color="green">{text}%</Tag>,
+            },
+            {
+              title: "Discount Amount",
+              dataIndex: "discountAmount",
+              key: "discountAmount",
+              render: (text) => <Tag color="blue">{text} VND</Tag>,
+            },
+            {
+              title: "Start Date",
+              dataIndex: "createdAt",
+              key: "createdAt",
+              render: (text) => dayjs(text).format("YYYY-MM-DD HH:mm:ss"),
+            },
+            {
+              title: "End Date",
+              dataIndex: "endAt",
+              key: "endAt",
+              render: (text) => dayjs(text).format("YYYY-MM-DD HH:mm:ss"),
+            },
+            {
+              title: "Status",
+              dataIndex: "status",
+              key: "status",
+              render: (status) =>
+                status ? (
+                  <Tag color="green">Active</Tag>
+                ) : (
+                  <Tag color="red">Expired</Tag>
+                ),
+            },
+            {
+              title: "Products",
+              dataIndex: "products",
+              key: "products",
+              render: (products) => (
+                <Button
+                  type="primary"
+                  onClick={() => handleViewProducts(products)}
+                  disabled={products.length === 0}
                 >
-                  {header.toUpperCase()}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {salePromotions.map((promotion) => (
-              <TableRow key={promotion.id}>
-                <TableCell align="center" style={{ fontWeight: "bold" }}>
-                  {promotion.id}
-                </TableCell>
-                <TableCell align="center">
-                  {promotion.discountPercentage}%
-                </TableCell>
-                <TableCell align="center">
-                  ${promotion.discountAmount}
-                </TableCell>
-                <TableCell align="center">
-                  {new Date(promotion.createdAt).toLocaleString()}
-                </TableCell>
-                <TableCell align="center">
-                  {new Date(promotion.endAt).toLocaleString()}
-                </TableCell>
-                <TableCell align="center" style={{ fontWeight: "bold" }}>
-                  {promotion.status ? (
-                    <span style={{ color: "green" }}>🟢 Active</span>
-                  ) : (
-                    <span style={{ color: "gray" }}>🚫 Inactive</span>
-                  )}
-                </TableCell>
-                <TableCell align="center">
-                  {promotion.pending ? (
-                    <span style={{ color: "orange" }}>🕒 Pending</span>
-                  ) : (
-                    "No"
-                  )}
-                </TableCell>
-                <TableCell align="center">
-                  <Button
-                    style={{ color: "rgb(180,0,0)" }}
-                    onClick={() =>
-                      alert(`View details of promotion ID: ${promotion.id}`)
-                    }
-                  >
-                    View
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                  View Products
+                </Button>
+              ),
+            },
+          ]}
+          dataSource={filteredPromotions}
+          rowKey="id"
+          pagination={{ pageSize: 5 }}
+        />
 
-      {/* Modal Create Sale Promotion */}
-      <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle>Create Sale Promotion</DialogTitle>
-        <DialogContent>
-          <TextField
-            margin="dense"
-            label="Discount Percentage"
-            name="discountPercentage"
-            type="number"
-            fullWidth
-            value={formData.discountPercentage}
-            onChange={handleChange}
+        {/* Modal xem sản phẩm */}
+        <Modal
+          title="Product List"
+          open={isModalOpen}
+          onCancel={() => setIsModalOpen(false)}
+          footer={null}
+        >
+          {selectedProducts.length > 0 ? (
+            <List
+              bordered
+              dataSource={selectedProducts}
+              renderItem={(item) => <List.Item>{item.name}</List.Item>}
+            />
+          ) : (
+            <p>No products available</p>
+          )}
+        </Modal>
+
+        {/* Gọi SalePromotionModal */}
+        {isSaleModalOpen && (
+          <SalePromotionModal
+            visible={isSaleModalOpen}
+            onClose={() => setIsSaleModalOpen(false)}
+            onCreate={() => {
+              fetchPromotions(); // Refresh danh sách sau khi tạo
+              setIsSaleModalOpen(false);
+            }}
           />
-          <TextField
-            margin="dense"
-            label="Discount Amount"
-            name="discountAmount"
-            type="number"
-            fullWidth
-            value={formData.discountAmount}
-            onChange={handleChange}
-          />
-          <TextField
-            label="End At"
-            name="endAt"
-            type="datetime-local"
-            fullWidth
-            value={formData.endAt}
-            onChange={handleChange}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} color="primary">
-            Create
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
+        )}
+      </Box>
+    </LocalizationProvider>
   );
 };
 
