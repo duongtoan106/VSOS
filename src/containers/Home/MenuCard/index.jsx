@@ -67,7 +67,7 @@ const MenuCard = () => {
       </div>
 
       <div className="bg-blue-900 py-4 mt-8 text-white text-center">
-        <p className="text-xl font-bold font-[Prata]">24/7 : 000 0000 000</p>
+        <p className="text-xl font-bold font-[Prata]">24/7 : 0327 730 336</p>
       </div>
     </div>
   );

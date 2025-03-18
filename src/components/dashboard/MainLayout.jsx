@@ -3,6 +3,8 @@ import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import AllAccount from "./AllAccount";
 import ProductList from "./ProductList";
+import PendingList from "./PendingList";
+import SalePromotionList from "./SalePromotionList";
 
 const { Header, Sider, Content } = Layout;
 
@@ -34,7 +36,10 @@ const MainLayout = () => {
 
   const menuItems = [
     { key: "1", label: "All Account", roles: ["ADMIN"] },
-    { key: "2", label: "All Product", roles: ["ADMIN", "MANAGER", "STAFF"] },
+    { key: "2", label: "All Products", roles: ["ADMIN", "MANAGER", "STAFF"] },
+    { key: "3", label: "Pending Products", roles: ["ADMIN", "MANAGER"] },
+    { key: "4", label: "Sale Promotion", roles: ["ADMIN", "MANAGER", "STAFF"] },
+    { key: "5", label: "Pending Sale Promotion", roles: ["ADMIN", "MANAGER"] },
   ];
 
   // Kiểm tra xem user có quyền hiển thị menu không
@@ -64,6 +69,10 @@ const MainLayout = () => {
         return <AllAccount />;
       case "2":
         return <ProductList />;
+      case "3":
+        return <PendingList />;
+      case "4":
+        return <SalePromotionList />;
       default:
         return <AllAccount />;
     }
@@ -85,6 +94,7 @@ const MainLayout = () => {
             selectedKeys={[selectedKey]}
             onClick={handleMenuClick}
             items={filteredMenuItems}
+            style={{ textAlign: "left", paddingLeft: "2px" }}
           />
         )}
       </Sider>

@@ -17,6 +17,8 @@ import noImage from "../../assets/img/noImage.jpg";
 
 import { app } from "../../../firebaseConfig";
 import {
+  approveProduct,
+  rejectProduct,
   createProduct,
   fetchProductDetails,
   fetchProducts,
@@ -25,7 +27,7 @@ import {
 const storage = getStorage(app); // Initialize Firebase storage
 const { Option } = Select;
 
-export default function ProductList() {
+export default function PendingList() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   // const [isModalVisible, setIsModalVisible] = useState(false);
@@ -44,13 +46,35 @@ export default function ProductList() {
   const [imagePreview, setImagePreview] = useState(null);
   const [form] = Form.useForm();
 
+  // useEffect(() => {
+  //   const getProducts = async () => {
+  //     try {
+  //       setLoading(true);
+  //       const data = await fetchProducts();
+  //       console.log("Dữ liệu sản phẩm nhận được:", data);
+  //       setProducts(data);
+  //     } catch (error) {
+  //       console.error("Lỗi khi tải sản phẩm:", error);
+  //       setError("Không thể tải sản phẩm");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   getProducts();
+  // }, []);
   useEffect(() => {
     const getProducts = async () => {
       try {
         setLoading(true);
         const data = await fetchProducts();
         console.log("Dữ liệu sản phẩm nhận được:", data);
-        setProducts(data);
+
+        // Lọc sản phẩm có pending = "TRUE"
+        const pendingProducts = data.filter(
+          (product) => product.pending === "TRUE"
+        );
+
+        setProducts(pendingProducts);
       } catch (error) {
         console.error("Lỗi khi tải sản phẩm:", error);
         setError("Không thể tải sản phẩm");
@@ -60,7 +84,6 @@ export default function ProductList() {
     };
     getProducts();
   }, []);
-
   const handleOpenModal = () => {
     form.resetFields();
     setImagePreview(noImage);
@@ -88,6 +111,32 @@ export default function ProductList() {
     maxHeight: "80vh", // Giới hạn chiều cao
     overflowY: "auto", // Cuộn khi nội dung quá dài
     boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+  };
+  const handleApproveRejectProduct = async (productId, action) => {
+    try {
+      console.log(`🔄 Sending ${action} request for product ID:`, productId);
+
+      // Gọi API tương ứng dựa vào action
+      if (action === "approve") {
+        await approveProduct(productId);
+      } else if (action === "reject") {
+        await rejectProduct(productId);
+      }
+
+      message.success(`🎉 Product has been ${action}d successfully!`);
+
+      // Cập nhật lại danh sách sản phẩm sau khi API thành công
+      const updatedProducts = products.filter(
+        (product) => product.id !== productId
+      );
+      setProducts(updatedProducts);
+
+      // Đóng modal nếu đang mở
+      setIsModalVisible(false);
+    } catch (error) {
+      console.error(`❌ Failed to ${action} product:`, error);
+      message.error(`⚠️ Failed to ${action} product. Please try again.`);
+    }
   };
 
   const handleCloseModal = () => setIsModalVisible(false);
@@ -225,7 +274,7 @@ export default function ProductList() {
 
   return (
     <div>
-      <Button
+      {/* <Button
         type="primary"
         onClick={handleOpenModal}
         style={{
@@ -235,7 +284,7 @@ export default function ProductList() {
         }}
       >
         Create New Product
-      </Button>
+      </Button> */}
 
       <TableContainer component={Paper}>
         <Table aria-label="product table">
@@ -449,6 +498,52 @@ export default function ProductList() {
             />
           </div>
         </div>
+        {/* <button onClick={handleApprove}>Duyệt sản phẩm</button> */}
+        <Button
+          type="primary"
+          htmlType="submit"
+          loading={loading}
+          style={{
+            marginTop: "16px",
+            backgroundColor: "rgb(0, 130, 11)",
+            borderColor: "rgb(0, 20, 2)",
+          }}
+          onClick={() => {
+            if (!selectedProduct?.id) {
+              console.error("❌ Không có ID sản phẩm để duyệt!");
+              alert("Không thể duyệt vì thiếu ID sản phẩm.");
+              return;
+            }
+            console.log("Nút Duyệt SP đã được bấm với ID:", selectedProduct.id);
+            handleApproveRejectProduct(selectedProduct.id);
+          }}
+        >
+          Duyệt SP
+        </Button>
+        <Button
+          type="primary"
+          loading={loading}
+          style={{
+            marginTop: "16px",
+            marginLeft: "10px",
+            backgroundColor: "rgb(180, 0, 0)",
+            borderColor: "rgb(180, 0, 0)",
+          }}
+          onClick={() => {
+            if (!selectedProduct?.id) {
+              console.error("❌ Không có ID sản phẩm để từ chối!");
+              alert("Không thể từ chối vì thiếu ID sản phẩm.");
+              return;
+            }
+            console.log(
+              "Nút Từ chối SP đã được bấm với ID:",
+              selectedProduct.id
+            );
+            handleApproveRejectProduct(selectedProduct.id, "reject");
+          }}
+        >
+          Từ chối SP
+        </Button>
       </Modal>
     </div>
   );

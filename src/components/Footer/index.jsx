@@ -64,7 +64,7 @@ const Footer = () => {
       title: "Liên Hệ",
       links: [
         "Email: support@vsos.com",
-        "Hotline: 1900 636 106",
+        "Hotline: 032 7730 33",
         "Social Media:",
       ],
       isSocial: true,
