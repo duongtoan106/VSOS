@@ -16,8 +16,7 @@ export default defineConfig({
       "/api": {
         target: "https://quick-tish-fpt123-e6533ba7.koyeb.app",
         changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/api/, ""), // Remove `/api` prefix if needed
+        rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },
   },

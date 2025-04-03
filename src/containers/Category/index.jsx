@@ -44,23 +44,25 @@ const Category = () => {
   };
 
   return (
-    <div className="flex p-4 font-[Prata] bg-white min-h-screen">
-      <div className="w-full p-4 md:p-6">
-        <h2 className="text-xl font-bold mb-4">Danh Sách Sản Phẩm</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div className="flex p-6 font-[Prata] bg-[#f5e6da] min-h-screen">
+      <div className="w-full p-6 bg-white shadow-lg rounded-lg">
+        <h2 className="text-2xl font-semibold text-gray-700 mb-6 border-b pb-2">
+          Danh Sách Sản Phẩm
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
-            <Card key={product.id} {...product} />
+            <Card key={product.id} product={product} />
           ))}
         </div>
         {/* Pagination */}
-        <div className="flex flex-wrap justify-center mt-4 gap-2">
+        <div className="flex flex-wrap justify-center mt-6 gap-3">
           {Array.from({ length: totalPages }, (_, index) => (
             <button
               key={index + 1}
-              className={`px-3 py-2 border rounded-md text-sm md:text-base ${
+              className={`px-4 py-2 border rounded-lg text-sm md:text-base font-medium transition duration-300 ${
                 currentPage === index + 1
-                  ? "bg-blue-500 text-white"
-                  : "bg-white"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 hover:bg-gray-200"
               }`}
               onClick={() => handlePageChange(index + 1)}
             >

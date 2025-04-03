@@ -7,37 +7,37 @@ const token = localStorage.getItem("token");
 
 // ========================== AUTHENTICATION ==========================
 export const login = async (username, password) => {
-  try {
-    const response = await fetch(`${API_URL}/api/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, password }),
-    });
+  const response = await fetch(`${API_URL}/api/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ username, password }),
+  });
 
-    if (!response.ok) {
-      throw new Error(
-        `Login failed: ${response.status} ${response.statusText}`
-      );
-    }
-
-    const data = await response.json();
-    console.log("Login success:", data);
-    return data;
-  } catch (error) {
-    console.error("Error:", error.message);
-    return null;
+  if (!response.ok) {
+    throw new Error("Sai tài khoản hoặc mật khẩu!");
   }
+
+  const data = await response.json();
+  console.log("Dữ liệu API trả về:", data);
+  return data;
 };
 
-export const register = async ({ username, phone, email, password }) => {
+export const register = async ({
+  username,
+  phone,
+  email,
+  password,
+  address,
+}) => {
   const requestData = {
     role: "USER",
     username,
     password,
     email,
     phone,
+    address,
   };
 
   try {
@@ -49,11 +49,13 @@ export const register = async ({ username, phone, email, password }) => {
       body: JSON.stringify(requestData),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      throw new Error("Đăng ký thất bại, vui lòng thử lại!");
+      throw new Error(data.message || "Đăng ký thất bại, vui lòng thử lại!");
     }
 
-    return { success: true, message: "Đăng ký thành công!" };
+    return { success: true, message: data.message || "Đăng ký thành công!" };
   } catch (error) {
     return { success: false, message: error.message };
   }
@@ -528,5 +530,105 @@ export const processOrderTransaction = async (transactionData) => {
   } catch (error) {
     console.error("Error processing order transaction:", error);
     throw error;
+  }
+};
+
+// ========================== CART MANAGEMENT ==========================
+
+export const addToCart = async (product, customerId, token) => {
+  try {
+    // Chuyển đổi giá thành số
+    const priceValue = parseFloat(product.price);
+    if (isNaN(priceValue)) throw new Error("Giá sản phẩm không hợp lệ!");
+
+    // Chuyển đổi ID thành số
+    const productId = parseInt(product.id);
+    if (isNaN(productId)) throw new Error("ID sản phẩm không hợp lệ!");
+
+    const payload = {
+      id: 0,
+      quantity: 1,
+      price: priceValue,
+      productId: productId,
+      product: {
+        id: productId,
+        image: product.image || "",
+        name: product.name || "",
+        description: product.description || "",
+        price: priceValue,
+        createdBy: "",
+        quantity: 0,
+        status: "TRUE",
+        pending: "TRUE",
+      },
+    };
+
+    console.log("Payload gửi đi:", JSON.stringify(payload, null, 2));
+
+    const response = await fetch(
+      `${API_URL}/api/cart/add?customerId=${customerId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    // 🛠 Kiểm tra nếu phản hồi rỗng hoặc không phải JSON hợp lệ
+    const textResponse = await response.text();
+    console.log("Phản hồi API:", textResponse);
+
+    if (!response.ok) {
+      throw new Error(`API Error ${response.status}: ${textResponse}`);
+    }
+
+    // 🛠 Chỉ parse JSON nếu phản hồi không rỗng
+    const data = textResponse ? JSON.parse(textResponse) : {};
+    console.log("Sản phẩm đã được thêm vào giỏ hàng:", data);
+
+    return data;
+  } catch (error) {
+    console.error("Lỗi khi thêm vào giỏ hàng:", error.message);
+    throw error;
+  }
+};
+
+export const getCartItems = async () => {
+  const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("userId");
+
+  if (!token) {
+    console.error("Token is missing!");
+    return [];
+  }
+
+  if (!userId) {
+    console.error("User ID is missing!");
+    return [];
+  }
+
+  try {
+    const response = await fetch(
+      `${API_URL}/api/cart/items?customerId=${userId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch cart items");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching cart items:", error);
+    return [];
   }
 };

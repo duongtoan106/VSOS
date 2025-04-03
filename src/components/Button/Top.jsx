@@ -1,20 +1,21 @@
 import { ArrowUp } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 const Top = () => {
   const [isVisible, setIsVisible] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const shouldBeVisible = window.scrollY > 300;
-      if (shouldBeVisible !== isVisible) {
-        setIsVisible(shouldBeVisible);
-      }
-    };
+  const handleScroll = useCallback(() => {
+    if (window.scrollY > 300) {
+      setIsVisible(true);
+    } else {
+      setIsVisible(false);
+    }
+  }, []);
 
+  useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isVisible]);
+  }, [handleScroll]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -24,9 +25,9 @@ const Top = () => {
     <button
       onClick={scrollToTop}
       aria-label="Lên đầu trang"
-      className={`fixed bottom-2.5 right-2.5 md:bottom-4 md:right-4 bg-[#FF6B6B] text-[#FFFFFF] 
+      className={`fixed bottom-2.5 right-2.5 md:bottom-4 md:right-4 bg-[#FFDCAB] text-[#AB6B2E] 
       shadow-md p-1.5 md:p-2 rounded-full transition-all duration-300 flex items-center justify-center
-      hover:bg-[#E63946] hover:shadow-lg active:scale-90 font-merriweather
+      hover:bg-[#FFC785] hover:shadow-lg active:scale-90 font-merriweather
       ${
         isVisible
           ? "opacity-100 translate-y-0"

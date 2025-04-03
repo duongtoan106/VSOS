@@ -1,12 +1,12 @@
 import Carousel from "../../components/Carousel/Carousel";
 import Home from "../../containers/Home/index";
-import MenuCard from "../Home/MenuCard";
+import Menu from "../Home/Menu";
 const HomeLayout = () => {
   return (
     <>
       <Carousel />
       <Home />
-      <MenuCard />
+      <Menu />
     </>
   );
 };

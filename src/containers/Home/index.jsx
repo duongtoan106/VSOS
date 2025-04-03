@@ -16,18 +16,25 @@ const Home = () => {
             {
               title: "AN TOÀN - NHANH CHÓNG - TIỆN LỢI",
               imgSrc: circle1,
+              description:
+                "Dịch vụ cứu hộ an toàn, nhanh chóng, hỗ trợ tận nơi.",
             },
             {
               title: "GIÁ THÀNH HỢP LÍ",
               imgSrc: circle2,
+              description:
+                "Báo giá minh bạch, cam kết không phát sinh chi phí.",
             },
             {
               title: "CHẤT LƯỢNG DỊCH VỤ",
               imgSrc: circle3,
+              description: "Đội ngũ chuyên nghiệp, tận tâm với khách hàng.",
             },
             {
               title: "CHÍNH SÁCH",
               imgSrc: circle4,
+              description:
+                "Chính sách bảo hành và hỗ trợ dài hạn cho khách hàng.",
             },
           ].map((item, index) => (
             <div key={index} className="flex flex-col items-center space-y-2">
@@ -43,9 +50,7 @@ const Home = () => {
               <h3 className="text-red-500 font-semibold whitespace-nowrap mt-2">
                 {item.title}
               </h3>
-              <p className="text-gray-600 text-sm">
-                Cam kết phục vụ khách hàng nhanh chóng và tiện lợi nhất.
-              </p>
+              <p className="text-gray-600 text-sm">{item.description}</p>
             </div>
           ))}
         </div>
@@ -107,7 +112,6 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Thêm ToastContainer vào đây */}
       <ToastContainer />
     </div>
   );

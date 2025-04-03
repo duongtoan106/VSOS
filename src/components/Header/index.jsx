@@ -12,36 +12,49 @@ const Header = () => {
   const [role, setRole] = useState(null);
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role"); // Lấy role từ localStorage
+    const role = localStorage.getItem("role");
     setIsLoggedIn(!!token);
-    setRole(role); // Lưu role vào state
+    setRole(role);
   }, []);
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   useEffect(() => {
     const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token); // Nếu có token -> đã đăng nhập
+    setIsLoggedIn(!!token);
   }, []);
 
   // Hàm đăng xuất
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Xóa token khi logout
+    localStorage.removeItem("token");
     setIsLoggedIn(false);
     navigate("/login");
   };
+
   const userMenu = [
+    ...(["ADMIN", "MANAGER", "STAFF"].includes(role)
+      ? [
+          {
+            key: "dashboard",
+            label: "Dashboard",
+            onClick: () => navigate("/dashboard"),
+          },
+        ]
+      : []),
     {
-      key: "dashboard",
-      label: "Dashboard",
-      onClick: () => navigate("/dashboard"),
-      hidden: !["ADMIN", "MANAGER", "STAFF"].includes(role), // Ẩn nếu không có quyền
+      key: "profile",
+      label: "Hồ Sơ Cá Nhân",
+      onClick: () => navigate("/profile"),
     },
     {
       key: "cart",
+      label: "Giỏ Hàng Của Bạn",
+      onClick: () => navigate("/cart"),
+    },
+    {
+      key: "order",
       label: "Đơn Hàng Của Bạn",
       onClick: () => navigate("/order"),
     },
-
     {
       key: "logout",
       label: "Đăng Xuất",
@@ -179,7 +192,7 @@ const Header = () => {
           <Button
             title="Đăng Nhập"
             onClick={() => navigate("/login")}
-            className="font-semibold text-xs px-4 py-2 rounded-full transition-all border border-gray-300 bg-[#2196F3] hover:bg-gray-100"
+            className="font-semibold text-xs px-4 py-2 rounded-full transition-all border border-gray-300 bg-[#E53935] hover:bg-gray-100"
           />
         )}
       </div>
