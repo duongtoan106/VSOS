@@ -20,6 +20,7 @@ const Login = () => {
       localStorage.setItem("token", data.token);
       localStorage.setItem("role", data.role);
       localStorage.setItem("userName", data.username);
+
       localStorage.setItem("userId", data.id);
 
       toast.success("Đăng nhập thành công!", {
@@ -28,6 +29,7 @@ const Login = () => {
       });
 
       navigate("/");
+
     } catch (error) {
       console.error(error.message);
       toast.error("Đăng nhập thất bại! " + error.message, {
