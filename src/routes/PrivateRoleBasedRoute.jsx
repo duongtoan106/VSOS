@@ -4,11 +4,16 @@ const PrivateRoleBasedRoute = ({ children }) => {
   const allowedRoles = ["ADMIN", "MANAGER", "STAFF"];
   const userRole = localStorage.getItem("role");
 
-  if (!allowedRoles.includes(userRole)) {
+  // Kiểm tra nếu không có role hoặc role không hợp lệ
+  if (!userRole || !allowedRoles.includes(userRole.toUpperCase())) {
     return (
-      <h2 style={{ color: "red", textAlign: "center" }}>
-        🚫 Bạn không có quyền truy cập vào trang này!
-      </h2>
+      <Navigate
+        to="/login"
+        state={{
+          message: "Bạn không có quyền truy cập vào trang này!",
+        }}
+        replace
+      />
     );
   }
 

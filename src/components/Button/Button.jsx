@@ -1,15 +1,23 @@
-const Button = ({ title, onClick, className = "" }) => {
+import { memo } from "react";
+
+const Button = ({
+  title,
+  onClick = () => {},
+  className = "",
+  type = "button",
+}) => {
   return (
     <button
+      type={type}
       onClick={onClick}
       className={`font-merriweather px-3 py-1.5 md:px-4 md:py-2 border-2 border-transparent 
-      bg-[#FF6B6B] text-black font-medium rounded-full shadow-md transition-all 
-      duration-300 ease-in-out hover:bg-[#E63946] hover:shadow-lg active:scale-95 
-      text-xs md:text-sm focus:outline-none focus:ring-2  ${className}`}
+      bg-[#D32F2F] text-black font-medium rounded-full shadow-md transition-all 
+      duration-300 ease-in-out hover:bg-[#B71C1C] hover:shadow-lg active:scale-95 
+      text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-[#FFC785] ${className}`}
     >
       {title}
     </button>
   );
 };
 
-export default Button;
+export default memo(Button);
