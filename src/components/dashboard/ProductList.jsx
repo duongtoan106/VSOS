@@ -18,8 +18,10 @@ import noImage from "../../assets/img/noImage.jpg";
 import { app } from "../../../firebaseConfig";
 import {
   createProduct,
+  deleteProductStatus,
   fetchProductDetails,
   fetchProducts,
+  // updateProductStatus,
 } from "../../constant/api";
 
 const storage = getStorage(app); // Initialize Firebase storage
@@ -138,7 +140,8 @@ export default function ProductList() {
       if (
         !values.productName ||
         !values.productDescription ||
-        !values.productPrice
+        !values.productPrice ||
+        !values.productQuantity
       ) {
         message.error("⚠️ Thiếu thông tin sản phẩm. Vui lòng kiểm tra lại.");
         setIsLoading(false);
@@ -159,6 +162,7 @@ export default function ProductList() {
       const productData = {
         image: imageUrl,
         name: values.productName,
+        quantity: values.productQuantity,
         description: values.productDescription,
         price: values.productPrice.toString(),
         createdBy: localStorage.getItem("username") || "Admin",
@@ -177,6 +181,26 @@ export default function ProductList() {
     } finally {
       setIsLoading(false); // Dừng loading sau khi hoàn tất
     }
+  };
+
+  const handleRemoveProduct = (id) => {
+    Modal.confirm({
+      title: "Bạn có chắc chắn muốn ẩn sản phẩm này không?",
+      content: "Sản phẩm sẽ không còn hiển thị với người dùng.",
+      okText: "Đồng ý",
+      cancelText: "Hủy",
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        try {
+          await deleteProductStatus(id);
+          message.success("Sản phẩm đã được cập nhật trạng thái!");
+          const updatedProducts = await fetchProducts();
+          setProducts(updatedProducts);
+        } catch (error) {
+          message.error("Không thể cập nhật trạng thái sản phẩm!");
+        }
+      },
+    });
   };
 
   // const handleRemoveProduct = async (productId) => {
@@ -329,7 +353,7 @@ export default function ProductList() {
                     View
                   </Button>
 
-                  {localStorage.getItem("usertype") === "Manager" && (
+                  {localStorage.getItem("role") === "MANAGER" && (
                     <Button
                       style={{ color: "red", marginLeft: "8px" }}
                       onClick={() =>
@@ -376,9 +400,16 @@ export default function ProductList() {
               </Form.Item> */}
               <Form.Item
                 name="productName"
-                label="Product Name"
+                label="Tên sản phẩm"
+                rules={[{ required: true, message: "Hãy nhập tên sản phẩm" }]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="productQuantity"
+                label="Số lượng"
                 rules={[
-                  { required: true, message: "Please enter product name" },
+                  { required: true, message: "Hãy nhập số lượng sản phẩm" },
                 ]}
               >
                 <Input />
@@ -394,14 +425,14 @@ export default function ProductList() {
               </Form.Item>
               <Form.Item
                 name="productPrice"
-                label="Price"
+                label="Giá sản phẩm"
                 rules={[
-                  { required: true, message: "Please enter price" },
+                  { required: true, message: "Hãy nhập giá sản phẩm" },
                   {
                     validator: (_, value) => {
                       if (value < 1) {
                         return Promise.reject(
-                          new Error("Product Price can't be less than 1!")
+                          new Error("Giá sản phẩm phải lớn hơn 1!")
                         );
                       }
                       // if (value > 9999) {
@@ -426,7 +457,7 @@ export default function ProductList() {
                   borderColor: "rgb(180,0,0)",
                 }}
               >
-                Submit
+                Tạo sản phẩm
               </Button>
             </Form>
           </div>

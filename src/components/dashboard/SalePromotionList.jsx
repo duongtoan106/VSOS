@@ -39,6 +39,8 @@ const SalePromotionList = () => {
 
       const data = await response.json();
       setPromotions(data);
+      console.log(data);
+
       setFilteredPromotions(data);
     } catch (error) {
       console.error("Error fetching promotions:", error);
@@ -114,6 +116,11 @@ const SalePromotionList = () => {
               title: "ID",
               dataIndex: "id",
               key: "id",
+            },
+            {
+              title: "Name", // Thêm cột Name
+              dataIndex: "name", // Cột này sẽ lấy dữ liệu từ field `name`
+              key: "name", // Chỉ định key là "name"
             },
             {
               title: "Discount %",

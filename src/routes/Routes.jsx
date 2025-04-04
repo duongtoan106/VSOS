@@ -18,16 +18,16 @@ const AppRoutes = () => {
         <Route path="category" element={<Category />} />
         <Route path="order" element={<Order />} />
         <Route path="cart" element={<Cart />} />
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoleBasedRoute>
+              <MainLayout />
+            </PrivateRoleBasedRoute>
+          }
+        />
       </Route>
 
-      <Route
-        path="/dashboard"
-        element={
-          <PrivateRoleBasedRoute>
-            <MainLayout />
-          </PrivateRoleBasedRoute>
-        }
-      />
       <Route path="login" element={<Login />} />
       <Route path="register" element={<Register />} />
       <Route path="/landingPage" element={<LayoutLanding />} />

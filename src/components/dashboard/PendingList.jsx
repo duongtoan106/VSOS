@@ -112,31 +112,35 @@ export default function PendingList() {
     overflowY: "auto", // Cuộn khi nội dung quá dài
     boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
   };
-  const handleApproveRejectProduct = async (productId, action) => {
+  const handleApprove = async (productId) => {
     try {
-      console.log(`🔄 Sending ${action} request for product ID:`, productId);
-
-      // Gọi API tương ứng dựa vào action
-      if (action === "approve") {
-        await approveProduct(productId);
-      } else if (action === "reject") {
-        await rejectProduct(productId);
-      }
-
-      message.success(`🎉 Product has been ${action}d successfully!`);
-
-      // Cập nhật lại danh sách sản phẩm sau khi API thành công
-      const updatedProducts = products.filter(
-        (product) => product.id !== productId
-      );
-      setProducts(updatedProducts);
-
-      // Đóng modal nếu đang mở
+      await approveProduct(productId);
+      message.success("✅ Sản phẩm đã được duyệt!");
+      setProducts((prev) => prev.filter((p) => p.id !== productId)); // Cập nhật danh sách
       setIsModalVisible(false);
     } catch (error) {
-      console.error(`❌ Failed to ${action} product:`, error);
-      message.error(`⚠️ Failed to ${action} product. Please try again.`);
+      console.error("❌ Lỗi duyệt sản phẩm:", error);
+      message.error("⚠️ Duyệt sản phẩm thất bại. Vui lòng thử lại.");
     }
+  };
+
+  const handleReject = async (productId) => {
+    try {
+      await rejectProduct(productId);
+      message.success("❌ Sản phẩm đã bị từ chối!");
+      setProducts((prev) => prev.filter((p) => p.id !== productId)); // Cập nhật danh sách
+      setIsModalVisible(false);
+    } catch (error) {
+      console.error("❌ Lỗi từ chối sản phẩm:", error);
+      message.error("⚠️ Từ chối sản phẩm thất bại. Vui lòng thử lại.");
+    }
+  };
+
+  const updateProductList = (productId) => {
+    setProducts((prevProducts) =>
+      prevProducts.filter((product) => product.id !== productId)
+    );
+    setIsModalVisible(false);
   };
 
   const handleCloseModal = () => setIsModalVisible(false);
@@ -501,7 +505,6 @@ export default function PendingList() {
         {/* <button onClick={handleApprove}>Duyệt sản phẩm</button> */}
         <Button
           type="primary"
-          htmlType="submit"
           loading={loading}
           style={{
             marginTop: "16px",
@@ -510,16 +513,16 @@ export default function PendingList() {
           }}
           onClick={() => {
             if (!selectedProduct?.id) {
-              console.error("❌ Không có ID sản phẩm để duyệt!");
-              alert("Không thể duyệt vì thiếu ID sản phẩm.");
+              message.error("Không thể duyệt vì thiếu ID sản phẩm.");
               return;
             }
-            console.log("Nút Duyệt SP đã được bấm với ID:", selectedProduct.id);
-            handleApproveRejectProduct(selectedProduct.id);
+            console.log("✅ Duyệt sản phẩm với ID:", selectedProduct.id);
+            handleApprove(selectedProduct.id);
           }}
         >
           Duyệt SP
         </Button>
+
         <Button
           type="primary"
           loading={loading}
@@ -531,15 +534,11 @@ export default function PendingList() {
           }}
           onClick={() => {
             if (!selectedProduct?.id) {
-              console.error("❌ Không có ID sản phẩm để từ chối!");
-              alert("Không thể từ chối vì thiếu ID sản phẩm.");
+              message.error("Không thể từ chối vì thiếu ID sản phẩm.");
               return;
             }
-            console.log(
-              "Nút Từ chối SP đã được bấm với ID:",
-              selectedProduct.id
-            );
-            handleApproveRejectProduct(selectedProduct.id, "reject");
+            console.log("❌ Từ chối sản phẩm với ID:", selectedProduct.id);
+            handleReject(selectedProduct.id);
           }}
         >
           Từ chối SP
