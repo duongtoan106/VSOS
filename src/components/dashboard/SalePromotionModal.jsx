@@ -26,8 +26,6 @@ const SalePromotionModal = ({ visible, onClose, onCreate }) => {
       });
   }, []);
 
-  // import { createSalePromotion } from './api'; // Import hàm createSalePromotion từ api.js
-
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();

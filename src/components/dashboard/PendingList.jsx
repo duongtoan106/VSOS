@@ -255,6 +255,7 @@ export default function PendingList() {
         productName: data.name,
         productDescription: data.description,
         productPrice: data.price,
+        productQuantity: data.quantity,
       });
 
       setImagePreview(data.image || noImage); // Nếu có ảnh thì hiển thị
@@ -355,6 +356,9 @@ export default function PendingList() {
                 <TableCell align="center">
                   {product.price || product.productPrice}
                 </TableCell>
+                <TableCell align="center">
+                  {product.quantity || product.productQuantity}
+                </TableCell>
                 <TableCell align="center" style={{ fontWeight: "bold" }}>
                   {product.status === "TRUE" && product.pending === "TRUE" ? (
                     <span style={{ color: "orange" }}>🕒 Chờ duyệt</span>
@@ -445,6 +449,26 @@ export default function PendingList() {
               >
                 <Input />
               </Form.Item>
+              <Form.Item
+                name="productQuantity"
+                label="Quantity"
+                rules={[
+                  { required: true, message: "Please enter quantity" },
+                  {
+                    validator: (_, value) => {
+                      if (value < 0) {
+                        return Promise.reject(
+                          new Error("Product Quantity can't be negative!")
+                        );
+                      }
+                      return Promise.resolve();
+                    },
+                  },
+                ]}
+              >
+                <InputNumber style={{ width: "100%" }} />
+              </Form.Item>
+
               <Form.Item
                 name="productPrice"
                 label="Price"

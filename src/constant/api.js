@@ -307,6 +307,50 @@ export const deleteProductStatus = async (id) => {
     throw error;
   }
 };
+import axios from "axios";
+
+export const updateProductStatus = async (productData) => {
+  try {
+    // Log dữ liệu sản phẩm trước khi gửi đi
+    console.log("Sending product data:", productData);
+
+    const response = await axios.put(
+      `${API_URL}/api/product/${productData.id}`,
+      {
+        id: productData.id,
+        image: productData.image,
+        name: productData.name,
+        description: productData.description,
+        price: productData.price,
+        createdBy: productData.createdBy || "string",
+        quantity: productData.quantity, // quantity là số
+        status: "TRUE",
+        pending: "TRUE",
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    // Log trạng thái phản hồi
+    console.log("API Response Status:", response.status);
+
+    // Log dữ liệu phản hồi từ API
+    console.log("API Response Data:", response.data);
+
+    // Kiểm tra xem API có trả về dữ liệu mới với quantity đã cập nhật không
+    if (response.data) {
+      console.log("Updated product quantity:", response.data.quantity);
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error("Error during product update:", error);
+    throw new Error("Cập nhật sản phẩm thất bại");
+  }
+};
 
 export const approveProduct = async (id) => {
   console.log("Gọi API duyệt sản phẩm với ID:", id);
@@ -339,6 +383,30 @@ export const approveProduct = async (id) => {
     console.error("Lỗi khi duyệt sản phẩm:", error);
     alert(`Có lỗi xảy ra: ${error.message}`);
     throw error;
+  }
+};
+export const deleteSalePromotion = async (promotionId) => {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(`${API_URL}/api/sale-promotion/${promotionId}`, {
+    method: "DELETE",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  // If the response has content, parse it as JSON; otherwise, return true for successful deletion.
+  if (!response.ok) {
+    throw new Error("Failed to delete promotion");
+  }
+
+  // Check if the response body contains JSON data
+  try {
+    const data = await response.json(); // This will fail if there's no JSON in the response
+    return data; // You can return the response data if needed
+  } catch (error) {
+    return true; // If no data in response, just return true for successful deletion
   }
 };
 

@@ -6,6 +6,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import SalePromotionModal from "./SalePromotionModal"; // Import modal
+import { deleteSalePromotion } from "../../constant/api";
 
 const API_URL = "https://quick-tish-fpt123-e6533ba7.koyeb.app";
 
@@ -59,6 +60,32 @@ const SalePromotionList = () => {
     });
 
     setFilteredPromotions(filtered);
+  };
+  const handleDelete = async (promotionId) => {
+    // Show confirmation dialog using Ant Design Modal
+    Modal.confirm({
+      title: "Bạn có thật sự muốn xóa chương trình khuyến mãi này?",
+      okText: "Đồng ý",
+      cancelText: "Không",
+      onOk: async () => {
+        try {
+          const response = await deleteSalePromotion(promotionId);
+
+          if (response) {
+            // After successful deletion, fetch the updated list of promotions
+            fetchPromotions(); // Refresh the list of promotions
+          } else {
+            throw new Error("Failed to delete promotion");
+          }
+        } catch (error) {
+          console.error("Error deleting promotion:", error);
+        }
+      },
+      onCancel: () => {
+        // Optional: Handle the case when the user cancels the modal
+        console.log("Deletion canceled");
+      },
+    });
   };
 
   const handleViewProducts = (products) => {
@@ -158,17 +185,32 @@ const SalePromotionList = () => {
                 ),
             },
             {
-              title: "Products",
+              title: "Actions",
               dataIndex: "products",
               key: "products",
-              render: (products) => (
-                <Button
-                  type="primary"
-                  onClick={() => handleViewProducts(products)}
-                  disabled={products.length === 0}
-                >
-                  View Products
-                </Button>
+              render: (products, record) => (
+                <div>
+                  <Button
+                    type="primary"
+                    onClick={() => handleViewProducts(products)}
+                    disabled={products.length === 0}
+                  >
+                    View Products
+                  </Button>
+                  {localStorage.getItem("role") === "MANAGER" && (
+                    <Button
+                      type="primary"
+                      onClick={() => handleDelete(record.id)}
+                      style={{
+                        marginLeft: 8,
+                        backgroundColor: "red",
+                        borderColor: "red",
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  )}
+                </div>
               ),
             },
           ]}

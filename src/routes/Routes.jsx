@@ -9,6 +9,7 @@ import Category from "@/containers/Category";
 import Order from "@/containers/Order";
 import Cart from "@/containers/Cart";
 import PrivateRoleBasedRoute from "./PrivateRoleBasedRoute";
+import PartnerService from "../components/partner/PartnerService";
 
 const AppRoutes = () => {
   return (
@@ -18,6 +19,7 @@ const AppRoutes = () => {
         <Route path="category" element={<Category />} />
         <Route path="order" element={<Order />} />
         <Route path="cart" element={<Cart />} />
+        <Route path="partners" element={<PartnerService />} />
         <Route
           path="/dashboard"
           element={

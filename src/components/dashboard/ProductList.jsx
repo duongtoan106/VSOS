@@ -21,6 +21,7 @@ import {
   deleteProductStatus,
   fetchProductDetails,
   fetchProducts,
+  updateProductStatus,
   // updateProductStatus,
 } from "../../constant/api";
 
@@ -93,6 +94,59 @@ export default function ProductList() {
   };
 
   const handleCloseModal = () => setIsModalVisible(false);
+  const handleUpdateProduct = async (values) => {
+    setIsLoading(true);
+    try {
+      if (
+        !values.productName ||
+        !values.productDescription ||
+        !values.productPrice ||
+        !values.productQuantity
+      ) {
+        message.error("⚠️ Thiếu thông tin sản phẩm. Vui lòng kiểm tra lại.");
+        setIsLoading(false);
+        return;
+      }
+
+      let imageUrl = selectedProduct.image || noImage; // Use existing image if no new one
+      if (imageFile) {
+        imageUrl = await uploadImage(imageFile);
+        if (!imageUrl) {
+          message.error("⚠️ Lỗi tải ảnh lên.");
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      const updatedProductData = {
+        id: selectedProduct.id,
+        image: imageUrl,
+        name: values.productName,
+        quantity: Number(values.productQuantity), // Chuyển quantity thành số
+        description: values.productDescription,
+        price: Number(values.productPrice), // Chuyển price thành số
+        createdBy: selectedProduct.createdBy || "string",
+        status: "TRUE",
+        pending: "TRUE",
+      };
+
+      console.log("Form values:", values);
+      console.log("Updated product data being sent:", updatedProductData);
+
+      await updateProductStatus(updatedProductData);
+      message.success("🎉 Sản phẩm đã được cập nhật thành công!");
+      setIsModalVisible(false);
+
+      // Refresh product list
+      const updatedProducts = await fetchProducts();
+      setProducts(updatedProducts);
+    } catch (error) {
+      console.error("🔥 Lỗi khi cập nhật sản phẩm:", error);
+      message.error("⚠️ Cập nhật sản phẩm thất bại. Vui lòng thử lại.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleImageChange = (e) => {
     console.log("📸 handleImageChange called!");
@@ -226,6 +280,7 @@ export default function ProductList() {
         productName: data.name,
         productDescription: data.description,
         productPrice: data.price,
+        productQuantity: data.quantity || data.productQuantity,
       });
 
       setImagePreview(data.image || noImage); // Nếu có ảnh thì hiển thị
@@ -379,7 +434,11 @@ export default function ProductList() {
       >
         <div style={{ display: "flex", gap: "20px" }}>
           <div style={{ flex: "1" }}>
-            <Form form={form} onFinish={handleFormSubmit} layout="vertical">
+            <Form
+              form={form}
+              onFinish={isViewMode ? handleUpdateProduct : handleFormSubmit}
+              layout="vertical"
+            >
               {/* <Form.Item
                 name="categoryId"
                 label="Category"
@@ -447,18 +506,33 @@ export default function ProductList() {
               >
                 <InputNumber style={{ width: "100%" }} />
               </Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={loading}
-                style={{
-                  marginTop: "16px",
-                  backgroundColor: "rgb(180,0,0)",
-                  borderColor: "rgb(180,0,0)",
-                }}
-              >
-                Tạo sản phẩm
-              </Button>
+              {isViewMode ? (
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={isLoading}
+                  style={{
+                    marginTop: "16px",
+                    backgroundColor: "rgb(180,0,0)",
+                    borderColor: "rgb(180,0,0)",
+                  }}
+                >
+                  Cập nhật sản phẩm
+                </Button>
+              ) : (
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={isLoading}
+                  style={{
+                    marginTop: "16px",
+                    backgroundColor: "rgb(180,0,0)",
+                    borderColor: "rgb(180,0,0)",
+                  }}
+                >
+                  Tạo sản phẩm
+                </Button>
+              )}
             </Form>
           </div>
           <div style={{ flex: "1", textAlign: "center" }}>
