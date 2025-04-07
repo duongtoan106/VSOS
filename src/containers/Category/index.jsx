@@ -13,9 +13,12 @@ const Category = () => {
     const getProducts = async () => {
       try {
         const data = await fetchProducts();
-        setProducts(data);
-        setFilteredProducts(data);
-        setTotalProducts(data.length);
+        const filteredData = data.filter(
+          (product) => product.status === "TRUE" && product.pending === "FALSE"
+        );
+        setProducts(filteredData);
+        setFilteredProducts(filteredData.slice(0, productsPerPage));
+        setTotalProducts(filteredData.length);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -38,37 +41,38 @@ const Category = () => {
   };
 
   const totalPages = Math.ceil(totalProducts / productsPerPage);
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
+  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
-    <div className="flex p-6 font-[Prata] bg-[#f5e6da] min-h-screen">
-      <div className="w-full p-6 bg-white shadow-lg rounded-lg">
-        <h2 className="text-2xl font-semibold text-gray-700 mb-6 border-b pb-2">
+    <div className="flex justify-center bg-[#f5e6da] min-h-screen font-[Prata] p-6">
+      <div className="w-full max-w-[1280px] bg-white shadow-xl rounded-2xl p-8">
+        <h2 className="text-3xl font-semibold text-gray-800 mb-8 border-b pb-4">
           Danh Sách Sản Phẩm
         </h2>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
             <Card key={product.id} product={product} />
           ))}
         </div>
+
         {/* Pagination */}
-        <div className="flex flex-wrap justify-center mt-6 gap-3">
-          {Array.from({ length: totalPages }, (_, index) => (
-            <button
-              key={index + 1}
-              className={`px-4 py-2 border rounded-lg text-sm md:text-base font-medium transition duration-300 ${
-                currentPage === index + 1
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-100 hover:bg-gray-200"
-              }`}
-              onClick={() => handlePageChange(index + 1)}
-            >
-              {index + 1}
-            </button>
-          ))}
+        <div className="flex justify-center mt-10">
+          <div className="flex flex-wrap gap-2">
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index + 1}
+                className={`px-4 py-2 rounded-full border text-sm font-medium transition-all duration-300 ${
+                  currentPage === index + 1
+                    ? "bg-blue-600 text-white shadow-md"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+                onClick={() => handlePageChange(index + 1)}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>

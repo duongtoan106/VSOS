@@ -7,6 +7,7 @@ export default {
     extend: {
       fontFamily: {
         merriweather: ["Merriweather", "serif"],
+        exo: ["Exo", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
