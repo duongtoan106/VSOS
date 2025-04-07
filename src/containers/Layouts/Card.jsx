@@ -36,7 +36,13 @@ const Card = ({ product, onAddToCart }) => {
         src={image}
         alt={name}
       />
-      <h3 className="font-semibold text-lg text-gray-800 mt-3">{name}</h3>
+      <h3
+        className="font-semibold text-lg text-gray-800 mt-3 truncate overflow-hidden whitespace-nowrap"
+        title={name}
+      >
+        {name}
+      </h3>
+
       <h3 className="font-semibold text-xl text-[#8B5E3B]">{price}đ</h3>
       <p className="text-gray-600 text-sm mt-2 line-clamp-2">{description}</p>
 

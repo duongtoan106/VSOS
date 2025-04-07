@@ -1,36 +1,41 @@
-import { Link, useNavigate } from "react-router-dom";
-import { Search, PhoneCall } from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { Search, PhoneCall } from "lucide-react";
+import { UserOutlined, MenuOutlined } from "@ant-design/icons";
+import { Dropdown } from "antd";
 import Button from "../Button/Button";
 import Logo from "../Logo";
 
-import { UserOutlined, MenuOutlined } from "@ant-design/icons";
-import { Dropdown } from "antd";
 const Header = () => {
   const [query, setQuery] = useState("");
-  const navigate = useNavigate();
-  const [role, setRole] = useState(null);
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
-    setIsLoggedIn(!!token);
-    setRole(role);
-  }, []);
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [role, setRole] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
   useEffect(() => {
     const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token);
+    const storedRole = localStorage.getItem("role");
+
+    if (token) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+
+    setRole(storedRole);
   }, []);
 
   // Hàm đăng xuất
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("role");
     setIsLoggedIn(false);
+    setRole(null);
     navigate("/login");
   };
 
-  const userMenu = [
+  const getUserMenu = (role) => [
     ...(["ADMIN", "MANAGER", "STAFF"].includes(role)
       ? [
           {
@@ -67,61 +72,50 @@ const Header = () => {
       to: "/",
       label: "TRANG CHỦ",
       color: "text-[#B71C1C]",
-      hover: "hover:text-[#E53935]",
+      hover: "hover:text-[#D32F2F]",
     },
     {
       to: "/landingPage",
       label: "GIỚI THIỆU",
       color: "text-[#0288D1]",
-      hover: "hover:text-[#01579B]",
+      hover: "hover:text-[#D32F2F]",
     },
     {
       to: "/category",
       label: "CỬA HÀNG VSOS",
       color: "text-[#0288D1]",
-      hover: "hover:text-[#01579B]",
+      hover: "hover:text-[#D32F2F]",
     },
     {
       to: "/gps_location",
       label: "ĐỊNH VỊ GPS",
       color: "text-[#0288D1]",
-      hover: "hover:text-[#01579B]",
+      hover: "hover:text-[#D32F2F]",
     },
     {
       to: "/partners",
       label: "ĐỐI TÁC LIÊN KẾT",
       color: "text-[#0288D1]",
-      hover: "hover:text-[#01579B]",
+      hover: "hover:text-[#D32F2F]",
     },
-    // {
-    //   to: "/community",
-    //   label: "CỘNG ĐỒNG",
-    //   color: "text-[#B0BEC5]",
-    //   hover: "hover:text-[#78909C]",
-    // },
-    // {
-    //   to: "/policy",
-    //   label: "CHÍNH SÁCH",
-    //   color: "text-[#B0BEC5]",
-    //   hover: "hover:text-[#78909C]",
-    // },
   ];
 
   return (
     <header className="flex items-center justify-between h-16 px-4 lg:px-8 bg-white shadow-md sticky top-0 z-50">
       {/* Logo + Slogan */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-0">
         <Link to="/">
           <Logo className="w-12 h-12 transition-transform hover:scale-110 block" />
         </Link>
-        <div>
-          <h1 className="text-transparent bg-clip-text bg-[#D32F2F] font-semibold italic text-base">
+        <div className="text-left">
+          {" "}
+          <h1 className="text-transparent bg-clip-text bg-[#D32F2F] font-semibold italic text-base font-exo">
             VSOS
           </h1>
-          <p className="text-[#D32F2F] text-[10px] font-semibold italic">
+          <p className="text-[#D32F2F] text-[8px] font-light italic font-exo">
             ĐỒNG HÀNH MỌI NƠI
           </p>
-          <p className="text-[#D32F2F] text-[10px] font-semibold italic">
+          <p className="text-[#D32F2F] text-[8px] font-light italic font-exo">
             KHÔNG LO CHƠI VƠI
           </p>
         </div>
@@ -131,11 +125,11 @@ const Header = () => {
       <Button
         title={
           <div className="flex items-center gap-2">
-            <PhoneCall className="w-4 h-4 animate-[shake_0.5s_infinite] text-white" />
-            <span>0327 730 336</span>
+            <PhoneCall className="w-4 h-4 text-white" />
+            <span className="font-medium">0327 730 336</span>
           </div>
         }
-        className="font-semibold text-xs px-4 py-2 rounded-full bg-[#E53935] hover:bg-[#B71C1C] text-white transition-all"
+        className="font-semibold text-xs px-5 py-3 rounded-full bg-[#E53935] hover:bg-[#C62828] text-white transition-all duration-300 ease-in-out shadow-md hover:shadow-lg"
       />
 
       {/* Navigation */}
@@ -146,7 +140,7 @@ const Header = () => {
             onClick={() => navigate(to)}
             className={`relative ${
               location.pathname === to ? "text-[#B71C1C]" : "text-[#0288D1]"
-            } hover:text-[#E53935] transition-all after:absolute after:left-0 after:bottom-[-2px] after:w-0 after:h-[2px] after:bg-current after:transition-all hover:after:w-full`}
+            } transition-all after:absolute after:left-0 after:bottom-[-2px] after:w-0 after:h-[2px] after:bg-current after:transition-all hover:after:w-full`}
           >
             {label}
           </button>
@@ -178,7 +172,7 @@ const Header = () => {
         {isLoggedIn ? (
           <>
             <Dropdown
-              menu={{ items: userMenu }}
+              menu={{ items: getUserMenu(role) }}
               trigger={["click"]}
               placement="bottomRight"
             >
