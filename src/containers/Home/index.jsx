@@ -11,7 +11,7 @@ const Home = () => {
     <div className="w-full">
       {/* Section 1 */}
       <div className="w-full bg-gray-100 py-8">
-        <div className="max-w-6xl mx-auto grid grid-cols-4 gap-8 text-center">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
           {[
             {
               title: "AN TOÀN - NHANH CHÓNG - TIỆN LỢI",
@@ -64,7 +64,7 @@ const Home = () => {
             CỨU HỘ KHẨN CẤP 24/24
           </h2>
 
-          <div className="grid grid-cols-2 gap-8 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             {/* Text Content */}
             <div className="text-left">
               <p className="text-sm leading-relaxed">
@@ -94,14 +94,14 @@ const Home = () => {
                     }
                   )
                 }
-                className="mt-4 bg-white text-red-600 px-6 py-2 rounded font-semibold shadow-md hover:bg-gray-200"
+                className="mt-4 bg-white text-red-600 px-6 py-2 rounded font-semibold shadow-md hover:bg-gray-200 transition-all duration-200"
               >
                 Xem Chi Tiết
               </button>
             </div>
 
             {/* Image */}
-            <div className="relative w-1/2 ml-16">
+            <div className="relative w-full md:w-1/2 ml-16">
               <img
                 src={truckImage}
                 alt="Cứu hộ xe"
