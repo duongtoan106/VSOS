@@ -87,7 +87,7 @@ const Header = () => {
       hover: "hover:text-[#D32F2F]",
     },
     {
-      to: "/gps_location",
+      to: "/SOSForm",
       label: "ĐỊNH VỊ GPS",
       color: "text-[#0288D1]",
       hover: "hover:text-[#D32F2F]",

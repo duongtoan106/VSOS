@@ -10,6 +10,7 @@ import Order from "@/containers/Order";
 import Cart from "@/containers/Cart";
 import PrivateRoleBasedRoute from "./PrivateRoleBasedRoute";
 import PartnerService from "../components/partner/PartnerService";
+import UserSOSForm from "../components/partner/UserSOSForm";
 
 const AppRoutes = () => {
   return (
@@ -20,6 +21,8 @@ const AppRoutes = () => {
         <Route path="order" element={<Order />} />
         <Route path="cart" element={<Cart />} />
         <Route path="partners" element={<PartnerService />} />
+        <Route path="SOSForm" element={<UserSOSForm />} />
+
         <Route
           path="/dashboard"
           element={
