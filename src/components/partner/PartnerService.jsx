@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Card, Typography, Space } from "antd";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const { Title, Paragraph } = Typography;
 
@@ -85,9 +86,11 @@ export default function PartnerService() {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.7 }}
         >
-          <Button type="primary" size="large" shape="round">
-            Đăng ký trở thành đối tác ngay
-          </Button>
+          <Link to="/register">
+            <Button type="primary" size="large" shape="round">
+              Đăng ký trở thành đối tác ngay
+            </Button>
+          </Link>
         </motion.div>
       </div>
     </div>

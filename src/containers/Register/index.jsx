@@ -51,7 +51,10 @@ const Register = () => {
       <h1 className="text-4xl text-white font-extrabold mt-10 absolute top-0 left-10 z-20 tracking-wide">
         Bắt Đầu Hành Trình
       </h1>
-      <h1 className="text-5xl font-extrabold text-[#1565C0] absolute top-24 left-10 z-20 tracking-wide">
+      <h1
+        className="text-5xl font-extrabold text-[#1565C0] absolute top-24 left-10 z-20 tracking-wide cursor-pointer"
+        onClick={() => navigate("/")}
+      >
         Cùng VSOS
       </h1>
 
@@ -201,6 +204,12 @@ const Register = () => {
           >
             Đăng Nhập
           </span>
+        </p>
+        <p
+          onClick={() => navigate("/")}
+          className="text-sm text-center mt-2 text-teal-500 cursor-pointer font-semibold hover:text-red-600 hover:underline transition duration-200 transform hover:scale-105 ml-1"
+        >
+          Quay lại Trang Chủ
         </p>
       </div>
     </div>
