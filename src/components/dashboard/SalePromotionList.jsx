@@ -107,7 +107,7 @@ const SalePromotionList = () => {
             letterSpacing: 1.5,
           }}
         >
-          Sale Promotion List
+          Danh sách khuyễn mãi
         </Typography>
 
         <Box
@@ -129,11 +129,11 @@ const SalePromotionList = () => {
               onChange={setEndDate}
             />
             <Button type="primary" onClick={handleFilter}>
-              Apply Filter
+              Bộ lọc
             </Button>
           </Box>
           <Button type="primary" onClick={() => setIsSaleModalOpen(true)}>
-            Create Promotion
+            Tạo khuyến mãi
           </Button>
         </Box>
 
@@ -145,36 +145,36 @@ const SalePromotionList = () => {
               key: "id",
             },
             {
-              title: "Name", // Thêm cột Name
+              title: "Tên Khuyến mãi", // Thêm cột Name
               dataIndex: "name", // Cột này sẽ lấy dữ liệu từ field `name`
               key: "name", // Chỉ định key là "name"
             },
             {
-              title: "Discount %",
+              title: "% Khuyến mãi",
               dataIndex: "discountPercentage",
               key: "discountPercentage",
               render: (text) => <Tag color="green">{text}%</Tag>,
             },
             {
-              title: "Discount Amount",
+              title: "Giảm giá",
               dataIndex: "discountAmount",
               key: "discountAmount",
               render: (text) => <Tag color="blue">{text} VND</Tag>,
             },
             {
-              title: "Start Date",
+              title: "Ngày bắt đầu",
               dataIndex: "createdAt",
               key: "createdAt",
               render: (text) => dayjs(text).format("YYYY-MM-DD HH:mm:ss"),
             },
             {
-              title: "End Date",
+              title: "Ngày kết thúc",
               dataIndex: "endAt",
               key: "endAt",
               render: (text) => dayjs(text).format("YYYY-MM-DD HH:mm:ss"),
             },
             {
-              title: "Status",
+              title: "Trạng thái",
               dataIndex: "status",
               key: "status",
               render: (status) =>
@@ -185,7 +185,7 @@ const SalePromotionList = () => {
                 ),
             },
             {
-              title: "Actions",
+              title: "Thao tác",
               dataIndex: "products",
               key: "products",
               render: (products, record) => (
@@ -195,7 +195,7 @@ const SalePromotionList = () => {
                     onClick={() => handleViewProducts(products)}
                     disabled={products.length === 0}
                   >
-                    View Products
+                    Xem chi tiết
                   </Button>
                   {localStorage.getItem("role") === "MANAGER" && (
                     <Button
@@ -207,7 +207,7 @@ const SalePromotionList = () => {
                         borderColor: "red",
                       }}
                     >
-                      Delete
+                      Xóa
                     </Button>
                   )}
                 </div>

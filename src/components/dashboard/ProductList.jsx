@@ -313,7 +313,7 @@ export default function ProductList() {
           borderColor: "rgb(180,0,0)",
         }}
       >
-        Create New Product
+        Tạo mới sản phẩm
       </Button>
 
       <TableContainer component={Paper}>
@@ -324,43 +324,43 @@ export default function ProductList() {
                 style={{ fontWeight: "bold", color: "rgb(180,0,0)" }}
                 align="center"
               >
-                PRODUCT ID
+                ID
               </TableCell>
               <TableCell
                 style={{ fontWeight: "bold", color: "rgb(180,0,0)" }}
                 align="left"
               >
-                PRODUCT NAME
+                Tên sản phẩm
               </TableCell>
               <TableCell
                 style={{ fontWeight: "bold", color: "rgb(180,0,0)" }}
                 align="left"
               >
-                DESCRIPTION
+                Mô tả
               </TableCell>
               <TableCell
                 style={{ fontWeight: "bold", color: "rgb(180,0,0)" }}
                 align="center"
               >
-                PRICE
+                Giá
               </TableCell>
               <TableCell
                 style={{ fontWeight: "bold", color: "rgb(180,0,0)" }}
                 align="center"
               >
-                STATUS
+                Trạng thái
               </TableCell>
               <TableCell
                 style={{ fontWeight: "bold", color: "rgb(180,0,0)" }}
                 align="center"
               >
-                USERNAME
+                Tên người tạo
               </TableCell>
               <TableCell
                 style={{ fontWeight: "bold", color: "rgb(180,0,0)" }}
                 align="center"
               >
-                ACTION
+                Thao tác
               </TableCell>
             </TableRow>
           </TableHead>

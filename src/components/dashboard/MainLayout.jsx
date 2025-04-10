@@ -45,11 +45,11 @@ const MainLayout = () => {
   }, [userType]);
 
   const menuItems = [
-    { key: "1", label: "All Account", roles: ["ADMIN"] },
-    { key: "2", label: "All Products", roles: ["ADMIN", "MANAGER", "STAFF"] },
-    { key: "3", label: "Pending Products", roles: ["ADMIN", "MANAGER"] },
-    { key: "4", label: "Sale Promotion", roles: ["ADMIN", "MANAGER", "STAFF"] },
-    { key: "5", label: "Pending Sale Promotion", roles: ["ADMIN", "MANAGER"] },
+    { key: "1", label: "DS tài khoản", roles: ["ADMIN"] },
+    { key: "2", label: "DS sản phẩm", roles: ["ADMIN", "MANAGER", "STAFF"] },
+    { key: "3", label: "DS sản phẩm đợi duyệt", roles: ["ADMIN", "MANAGER"] },
+    { key: "4", label: "DS khuyến mãi", roles: ["ADMIN", "MANAGER", "STAFF"] },
+    // { key: "5", label: "Pending Sale Promotion", roles: ["ADMIN", "MANAGER"] },
   ];
 
   const filteredMenuItems = menuItems.filter((item) =>

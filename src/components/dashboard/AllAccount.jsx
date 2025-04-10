@@ -97,7 +97,7 @@ export default function AllAccount() {
                 }}
                 align="left"
               >
-                Customer Name
+                Tên Người dùng
               </TableCell>
               <TableCell
                 style={{
@@ -107,7 +107,7 @@ export default function AllAccount() {
                 }}
                 align="left"
               >
-                Customer Phone
+                Số điện thoại{" "}
               </TableCell>
               <TableCell
                 style={{
@@ -127,7 +127,7 @@ export default function AllAccount() {
                 }}
                 align="left"
               >
-                Role
+                Vai trò
               </TableCell>
               <TableCell
                 style={{
@@ -137,7 +137,7 @@ export default function AllAccount() {
                 }}
                 align="center"
               >
-                Action
+                Thao tác
               </TableCell>
             </TableRow>
           </TableHead>
@@ -164,7 +164,7 @@ export default function AllAccount() {
                     style={{ color: "rgb(180,0,0)", marginRight: "8px" }}
                     onClick={() => handleViewClick(customer.id)}
                   >
-                    View
+                    Chi tiết
                   </Button>
                   {/* <DeleteUser
                     customerId={customer.userId}
