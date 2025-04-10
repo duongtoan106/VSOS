@@ -105,13 +105,13 @@ export const fetchAccountDetails = async (id) => {
     throw new Error("ID is required");
   }
 
- try {
+  try {
     const token = localStorage.getItem("token");
 
     if (!token) {
       console.error("Error: Token is missing!");
       throw new Error("Token is required");
-    } 
+    }
 
     const response = await fetch(`${API_URL}/api/id?id=${id}`, {
       method: "GET",
@@ -141,10 +141,10 @@ export const fetchAccountDetails = async (id) => {
 // ========================== PRODUCT MANAGEMENT ==========================
 export const fetchProducts = async () => {
   try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      throw new Error("No token found. Please log in.");
-    }
+    // const token = localStorage.getItem("token");
+    // if (!token) {
+    //   throw new Error("No token found. Please log in.");
+    // }
 
     const response = await fetch(`${API_URL}/api/product/getAll`, {
       method: "GET",

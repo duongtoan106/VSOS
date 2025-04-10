@@ -299,43 +299,49 @@ export default function PendingList() {
                 style={{ fontWeight: "bold", color: "rgb(180,0,0)" }}
                 align="center"
               >
-                PRODUCT ID
+                ID sản phẩm
               </TableCell>
               <TableCell
                 style={{ fontWeight: "bold", color: "rgb(180,0,0)" }}
                 align="left"
               >
-                PRODUCT NAME
+                Tên sản phẩm
               </TableCell>
               <TableCell
                 style={{ fontWeight: "bold", color: "rgb(180,0,0)" }}
                 align="left"
               >
-                DESCRIPTION
+                Mô tả
               </TableCell>
               <TableCell
                 style={{ fontWeight: "bold", color: "rgb(180,0,0)" }}
                 align="center"
               >
-                PRICE
+                Giá
               </TableCell>
               <TableCell
                 style={{ fontWeight: "bold", color: "rgb(180,0,0)" }}
                 align="center"
               >
-                STATUS
+                Số lượng
               </TableCell>
               <TableCell
                 style={{ fontWeight: "bold", color: "rgb(180,0,0)" }}
                 align="center"
               >
-                USERNAME
+                Trạng thái
               </TableCell>
               <TableCell
                 style={{ fontWeight: "bold", color: "rgb(180,0,0)" }}
                 align="center"
               >
-                ACTION
+                Người tạo
+              </TableCell>
+              <TableCell
+                style={{ fontWeight: "bold", color: "rgb(180,0,0)" }}
+                align="center"
+              >
+                Thao tác
               </TableCell>
             </TableRow>
           </TableHead>
