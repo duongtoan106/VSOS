@@ -87,8 +87,8 @@ const Header = () => {
       hover: "hover:text-[#D32F2F]",
     },
     {
-      to: "/gps_location",
-      label: "ĐỊNH VỊ GPS",
+      to: "/policy",
+      label: "CHÍNH SÁCH",
       color: "text-[#0288D1]",
       hover: "hover:text-[#D32F2F]",
     },
@@ -186,7 +186,7 @@ const Header = () => {
           <Button
             title="Đăng Nhập"
             onClick={() => navigate("/login")}
-            className="font-semibold text-xs px-4 py-2 rounded-full transition-all border border-gray-300 bg-[#E53935] hover:bg-gray-100"
+            className="font-semibold text-xs px-4 py-2 rounded-full transition-all border-gray-300 bg-[#0288D1] hover:bg-[#0277BD] text-white"
           />
         )}
       </div>

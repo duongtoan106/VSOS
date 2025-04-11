@@ -105,13 +105,13 @@ export const fetchAccountDetails = async (id) => {
     throw new Error("ID is required");
   }
 
- try {
+  try {
     const token = localStorage.getItem("token");
 
     if (!token) {
       console.error("Error: Token is missing!");
       throw new Error("Token is required");
-    } 
+    }
 
     const response = await fetch(`${API_URL}/api/id?id=${id}`, {
       method: "GET",
@@ -131,26 +131,21 @@ export const fetchAccountDetails = async (id) => {
       }
     }
 
-    return response.json(); // return directly without await
+    return response.json();
   } catch (error) {
     console.error("Error fetching account details:", error);
-    throw error; // rethrow the error for higher-level handling
+    throw error;
   }
 };
 
 // ========================== PRODUCT MANAGEMENT ==========================
 export const fetchProducts = async () => {
   try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      throw new Error("No token found. Please log in.");
-    }
-
     const response = await fetch(`${API_URL}/api/product/getAll`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
       },
     });
 
@@ -204,25 +199,22 @@ export const createProduct = async (
   let imageUrl = noImage;
 
   try {
-    // Kiểm tra dữ liệu đầu vào
     if (
       !values ||
       !values.productName ||
       !values.productDescription ||
       !values.productPrice
     ) {
-      throw new Error("⚠️ Thiếu thông tin sản phẩm. Vui lòng kiểm tra lại.");
+      throw new Error("Thiếu thông tin sản phẩm. Vui lòng kiểm tra lại.");
     }
 
-    // Upload ảnh nếu có
     if (imageFile) {
-      console.log("📸 File ảnh trước khi upload:", imageFile);
-      console.log("📤 Đang gọi uploadImage...");
+      console.log("File ảnh trước khi upload:", imageFile);
+      console.log("Đang gọi uploadImage...");
       imageUrl = await uploadImage(imageFile);
-      console.log("✅ Ảnh đã upload, URL:", imageUrl);
+      console.log("Ảnh đã upload, URL:", imageUrl);
     }
 
-    // Chuẩn bị payload gửi lên API
     const payload = {
       id: 0,
       image: imageUrl,
@@ -238,7 +230,7 @@ export const createProduct = async (
 
     const token = localStorage.getItem("token");
     if (!token) {
-      throw new Error("⚠️ Không tìm thấy token. Vui lòng đăng nhập lại.");
+      throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
     }
 
     const response = await fetch(`${API_URL}/api/product`, {
@@ -252,17 +244,17 @@ export const createProduct = async (
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`🚨 API Error ${response.status}: ${errorText}`);
+      throw new Error(`API Error ${response.status}: ${errorText}`);
     }
 
     const responseData = await response.json();
-    console.log("✅ API Response:", responseData);
+    console.log("API Response:", responseData);
 
-    message.success("🎉 Tạo sản phẩm thành công!");
+    message.success("Tạo sản phẩm thành công!");
     fetchProducts();
     handleCloseModal();
   } catch (error) {
-    console.error("🔥 Lỗi khi tạo sản phẩm:", error);
+    console.error("Lỗi khi tạo sản phẩm:", error);
     message.error(error.message || "Tạo sản phẩm thất bại. Vui lòng thử lại.");
   }
 };
@@ -450,16 +442,14 @@ export const createOrder = async (orderData) => {
     body: JSON.stringify(orderData),
   });
 
-  // Check if content-type is JSON
   const contentType = res.headers.get("content-type");
 
   if (res.ok) {
     if (contentType && contentType.includes("application/json")) {
       return await res.json();
     } else {
-      // Trường hợp trả về text/plain chứa URL VNPAY
       const text = await res.text();
-      return { url: text }; // Trả về object có key `url` để xử lý như trước
+      return { url: text };
     }
   } else {
     throw new Error("Error creating order");
@@ -534,11 +524,9 @@ export const processOrderTransaction = async (transactionData) => {
 
 export const addToCart = async (product, customerId, token) => {
   try {
-    // Chuyển đổi giá thành số
     const priceValue = parseFloat(product.price);
     if (isNaN(priceValue)) throw new Error("Giá sản phẩm không hợp lệ!");
 
-    // Chuyển đổi ID thành số
     const productId = parseInt(product.id);
     if (isNaN(productId)) throw new Error("ID sản phẩm không hợp lệ!");
 
@@ -574,7 +562,6 @@ export const addToCart = async (product, customerId, token) => {
       }
     );
 
-    // 🛠 Kiểm tra nếu phản hồi rỗng hoặc không phải JSON hợp lệ
     const textResponse = await response.text();
     console.log("Phản hồi API:", textResponse);
 
@@ -582,7 +569,6 @@ export const addToCart = async (product, customerId, token) => {
       throw new Error(`API Error ${response.status}: ${textResponse}`);
     }
 
-    // 🛠 Chỉ parse JSON nếu phản hồi không rỗng
     const data = textResponse ? JSON.parse(textResponse) : {};
     console.log("Sản phẩm đã được thêm vào giỏ hàng:", data);
 
