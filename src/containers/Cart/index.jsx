@@ -1,16 +1,22 @@
 import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import backgroundImage from "../../assets/cart.png";
-import { getCartItems, removeFromCart, createOrder } from "../../constant/api";
+import { getCartItems, removeFromCart } from "../../constant/api";
+import { toast } from "react-toastify";
+import { useMemo } from "react";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
   const [isLoading, setLoading] = useState(true);
-  const [isCreatingOrder, setCreatingOrder] = useState(false);
-
   const customerId = localStorage.getItem("userId");
   const token = localStorage.getItem("token");
+
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const qrURL = useMemo(() => {
+    return `https://img.vietqr.io/image/VCB-9766710603-compact2.png?amount=${totalAmount}&addInfo=THANH%20TOAN%20DON%20HANG`;
+  }, [totalAmount]);
 
   const groupCartItems = (items) => {
     const grouped = {};
@@ -72,35 +78,17 @@ const Cart = () => {
   const handleCreateOrder = async () => {
     if (selectedItems.length === 0) return;
 
-    const orderData = {
-      customerId,
-      detail: cartItems
-        .filter((item) => selectedItems.includes(item.product.id))
-        .map((item) => ({
-          productId: item.product.id,
-          quantity: item.quantity,
-        })),
-    };
-
-    setCreatingOrder(true);
-    try {
-      const order = await createOrder(orderData);
-      console.log("Order created successfully:", order);
-
-      // Kiểm tra nếu order là một đối tượng và có thuộc tính URL trả về
-      if (order && order.url && order.url.includes("vnpayment.vn")) {
-        // Chuyển hướng người dùng đến trang thanh toán của VNPAY
-        window.location.assign(order.url);
-      } else {
-        alert("Lỗi khi tạo đơn hàng. Vui lòng thử lại.");
-      }
-    } catch (error) {
-      console.error("Error creating order:", error);
-      alert("Lỗi khi tạo đơn hàng. Vui lòng thử lại.");
-    } finally {
-      setCreatingOrder(false);
-    }
+    toast.success("Vui lòng quét mã để thanh toán!");
+    setShowQRModal(true);
   };
+
+  useEffect(() => {
+    const total = cartItems
+      .filter((item) => selectedItems.includes(item.product.id))
+      .reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+
+    setTotalAmount(total);
+  }, [selectedItems, cartItems]);
 
   return (
     <div
@@ -112,7 +100,6 @@ const Cart = () => {
           Giỏ hàng của bạn
         </h1>
         <div className="flex gap-6">
-          {/* Bảng thông tin sản phẩm */}
           <div className="w-2/3">
             <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden shadow-md">
               <thead>
@@ -258,16 +245,37 @@ const Cart = () => {
             <button
               onClick={handleCreateOrder}
               className={`mt-6 bg-blue-500 text-white w-full py-3 rounded-lg transition font-medium ${
-                selectedItems.length === 0 || isCreatingOrder
+                selectedItems.length === 0
                   ? "opacity-50 cursor-not-allowed"
                   : "hover:bg-blue-600"
               }`}
-              disabled={selectedItems.length === 0 || isCreatingOrder}
+              disabled={selectedItems.length === 0}
             >
-              {isCreatingOrder ? "Đang chuyển hướng..." : "Thanh toán"}
+              Thanh toán
             </button>
           </div>
         </div>
+        {showQRModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white p-6 rounded-lg shadow-xl text-center relative w-[350px]">
+              <h2 className="text-lg font-semibold text-green-700 mb-4">
+                Quét mã để thanh toán
+              </h2>
+              <img
+                src={qrURL}
+                alt="QR thanh toán"
+                className="w-full h-auto rounded-lg"
+              />
+
+              <button
+                className="mt-4 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition"
+                onClick={() => setShowQRModal(false)}
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
