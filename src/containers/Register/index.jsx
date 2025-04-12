@@ -199,17 +199,17 @@ const Register = () => {
         <p className="text-sm text-center mt-4">
           Đã có tài khoản?
           <span
-            className="text-sm text-center mt-2 text-teal-500 cursor-pointer font-semibold hover:text-teal-600 hover:underline transition duration-200 transform hover:scale-105 ml-1"
+            className="text-sm text-center mt-2 text-blue-600 cursor-pointer font-semibold hover:text-blue-800 hover:underline transition duration-200 transform hover:scale-105 ml-1"
             onClick={() => navigate("/login")}
           >
             Đăng Nhập
           </span>
         </p>
         <p
+          className="text-sm text-center mt-2 text-teal-500 cursor-pointer font-semibold hover:text-teal-600 hover:underline transition duration-200 transform hover:scale-105"
           onClick={() => navigate("/")}
-          className="text-sm text-center mt-2 text-teal-500 cursor-pointer font-semibold hover:text-red-600 hover:underline transition duration-200 transform hover:scale-105 ml-1"
         >
-          Quay lại Trang Chủ
+          Quay về trang chủ
         </p>
       </div>
     </div>

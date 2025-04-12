@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchOrders } from "../../constant/api";
+import { fetchMyOrders } from "../../constant/api";
 
 const Order = () => {
   const [orders, setOrders] = useState([]);
@@ -8,8 +8,11 @@ const Order = () => {
   useEffect(() => {
     const loadOrders = async () => {
       try {
-        const data = await fetchOrders();
-        setOrders(data);
+        const data = await fetchMyOrders();
+        const sortedOrders = data.sort(
+          (a, b) => new Date(b.date) - new Date(a.date)
+        );
+        setOrders(sortedOrders);
       } catch (err) {
         console.error("Error loading orders:", err);
       } finally {
@@ -35,13 +38,13 @@ const Order = () => {
           <table className="min-w-full bg-white shadow-lg rounded-lg overflow-hidden">
             <thead className="bg-blue-100 text-gray-700 text-sm uppercase">
               <tr>
-                <th className="py-3 px-4 text-left">Mã đơn</th>
-                <th className="py-3 px-4 text-left">Ngày đặt</th>
-                <th className="py-3 px-4 text-left">Khách hàng</th>
-                <th className="py-3 px-4 text-left">Địa chỉ</th>
-                <th className="py-3 px-4 text-left">SĐT</th>
-                <th className="py-3 px-4 text-left">Sản phẩm</th>
-                <th className="py-3 px-4 text-right">Tổng tiền</th>
+                <th className="py-3 px-4 text-center">Mã đơn</th>
+                <th className="py-3 px-4 text-center">Ngày đặt</th>
+                <th className="py-3 px-4 text-cnter">Khách hàng</th>
+                <th className="py-3 px-4 text-center">Địa chỉ</th>
+                <th className="py-3 px-4 text-center">SĐT</th>
+                <th className="py-3 px-4 text-center">Sản phẩm</th>
+                <th className="py-3 px-4 text-center">Tổng tiền</th>
               </tr>
             </thead>
             <tbody className="text-gray-700 text-sm">
