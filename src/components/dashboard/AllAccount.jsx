@@ -25,6 +25,18 @@ export default function AllAccount() {
   //   useState(false);
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const customersPerPage = 10;
+  const indexOfLastCustomer = currentPage * customersPerPage;
+  const indexOfFirstCustomer = indexOfLastCustomer - customersPerPage;
+  const currentCustomers = customers.slice(
+    indexOfFirstCustomer,
+    indexOfLastCustomer
+  );
+  const totalPages = Math.ceil(customers.length / customersPerPage);
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   // Fetch customer data from API
   useEffect(() => {
@@ -142,7 +154,7 @@ export default function AllAccount() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {customers.map((customer) => (
+            {currentCustomers.map((customer) => (
               <TableRow key={customer.userId}>
                 <TableCell style={{ width: "5%" }} align="center">
                   {customer.id}
@@ -176,7 +188,18 @@ export default function AllAccount() {
           </TableBody>
         </Table>
       </TableContainer>
-
+      <div style={{ marginTop: "16px", textAlign: "center" }}>
+        {Array.from({ length: totalPages }, (_, index) => (
+          <Button
+            key={index}
+            onClick={() => handlePageChange(index + 1)}
+            type={currentPage === index + 1 ? "primary" : "default"}
+            style={{ margin: "0 4px" }}
+          >
+            {index + 1}
+          </Button>
+        ))}
+      </div>
       {/* View Account Modal */}
       {selectedCustomerId && (
         <AccountModal
