@@ -107,7 +107,7 @@ const styles = {
   footer: {
     backgroundColor: "rgb(180, 0, 0)",
     color: "white",
-    padding: "0px 20px",
+    padding: "20px",
     textAlign: "left",
   },
   container: {

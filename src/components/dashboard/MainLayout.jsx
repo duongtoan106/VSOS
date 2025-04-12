@@ -10,23 +10,19 @@ const { Header, Sider, Content } = Layout;
 
 const MainLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const [selectedKey, setSelectedKey] = useState(
-    localStorage.getItem("selectedKey") || "1"
-  );
+  const [selectedKey, setSelectedKey] = useState("2");
   const [menuVisible, setMenuVisible] = useState(false);
-  const [userType, setUserType] = useState(localStorage.getItem("role") || ""); // ✅ Sử dụng state
+  const [userType, setUserType] = useState(localStorage.getItem("role") || "");
 
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  // Cập nhật userType khi component mount
   useEffect(() => {
     const role = localStorage.getItem("role") || "";
     setUserType(role);
     console.log("User Role cập nhật:", role);
 
-    // Nếu role không hợp lệ, có thể redirect về login
     if (
       !["ADMIN", "MANAGER", "STAFF", "CUSTOMER"].includes(role.toUpperCase())
     ) {
@@ -34,29 +30,31 @@ const MainLayout = () => {
     }
   }, []);
 
-  const menuItems = [
-    { key: "1", label: "All Account", roles: ["ADMIN"] },
-    { key: "2", label: "All Products", roles: ["ADMIN", "MANAGER", "STAFF"] },
-    { key: "3", label: "Pending Products", roles: ["ADMIN", "MANAGER"] },
-    { key: "4", label: "Sale Promotion", roles: ["ADMIN", "MANAGER", "STAFF"] },
-    { key: "5", label: "Pending Sale Promotion", roles: ["ADMIN", "MANAGER"] },
-  ];
-
-  // Kiểm tra xem user có quyền hiển thị menu không
-  const filteredMenuItems = menuItems.filter((item) =>
-    item.roles.includes(userType.toUpperCase())
-  );
-
   useEffect(() => {
-    if (!localStorage.getItem("selectedKey")) {
-      if (userType === "ADMIN") setSelectedKey("1");
-      else if (userType === "MANAGER") setSelectedKey("2");
+    if (userType === "STAFF") {
+      setSelectedKey("2");
+    } else if (userType === "ADMIN") {
+      setSelectedKey("1");
+    } else if (userType === "MANAGER") {
+      setSelectedKey("2");
     }
 
     setMenuVisible(
       ["ADMIN", "MANAGER", "STAFF", "CUSTOMER"].includes(userType.toUpperCase())
     );
   }, [userType]);
+
+  const menuItems = [
+    { key: "1", label: "DS tài khoản", roles: ["ADMIN"] },
+    { key: "2", label: "DS sản phẩm", roles: ["ADMIN", "MANAGER", "STAFF"] },
+    { key: "3", label: "DS sản phẩm đợi duyệt", roles: ["ADMIN", "MANAGER"] },
+    { key: "4", label: "DS khuyến mãi", roles: ["ADMIN", "MANAGER", "STAFF"] },
+    // { key: "5", label: "Pending Sale Promotion", roles: ["ADMIN", "MANAGER"] },
+  ];
+
+  const filteredMenuItems = menuItems.filter((item) =>
+    item.roles.includes(userType.toUpperCase())
+  );
 
   const handleMenuClick = (e) => {
     setSelectedKey(e.key);
@@ -74,7 +72,7 @@ const MainLayout = () => {
       case "4":
         return <SalePromotionList />;
       default:
-        return <AllAccount />;
+        return <ProductList />;
     }
   };
 

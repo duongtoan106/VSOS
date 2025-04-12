@@ -9,56 +9,104 @@ import {
   InputNumber,
   message,
 } from "antd";
-import { fetchProducts } from "../../constant/api";
+import { createSalePromotion, fetchProducts } from "../../constant/api";
 
 const SalePromotionModal = ({ visible, onClose, onCreate }) => {
   const [products, setProducts] = useState([]);
+  const [selectedProductIds, setSelectedProductIds] = useState([]);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 
-  // Fetch danh sách sản phẩm từ API
   useEffect(() => {
     fetchProducts()
       .then((data) => setProducts(data))
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error("Lỗi khi lấy sản phẩm:", error);
+        message.error("Không thể tải danh sách sản phẩm.");
+      });
   }, []);
 
-  // Gửi dữ liệu lên API
-  const [selectedProducts, setSelectedProducts] = useState([]);
-
-  const handleCheckboxChange = (checkedValues) => {
-    setSelectedProducts(checkedValues);
-  };
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
       setLoading(true);
 
-      const selectedProducts = products.filter((product) =>
-        values.products.includes(product.id)
-      );
+      if (selectedProductIds.length === 0) {
+        message.error("Vui lòng chọn ít nhất một sản phẩm!");
+        setLoading(false);
+        return;
+      }
 
-      const response = await fetch("/api/sale-promotion", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...values,
-          startAt: values.startAt.toISOString(),
-          endAt: values.endAt.toISOString(),
-          products: selectedProducts, // Gửi nguyên vẹn thông tin sản phẩm
-        }),
-      });
+      const token = localStorage.getItem("token");
+      if (!token) {
+        message.error("Bạn chưa đăng nhập hoặc token không hợp lệ.");
+        setLoading(false);
+        return;
+      }
 
-      if (response.ok) {
-        message.success("Sale promotion created successfully!");
+      const createdBy = localStorage.getItem("userName") || "Unknown";
+
+      const selectedProductsData = selectedProductIds
+        .map((productId) => {
+          const product = products.find((p) => p.id === productId);
+          return product
+            ? {
+                id: product.id,
+                image: product.image || "string",
+                name: product.name || "string",
+                description: product.description || "string",
+                price: parseFloat(product.price) || 0,
+                createdBy,
+                quantity: product.quantity || 0,
+                status: true,
+                pending: true,
+              }
+            : null;
+        })
+        .filter(Boolean);
+
+      // Xử lý giá trị giảm giá
+      const discountPercentage = values.discountPercentage || 0;
+      const discountAmount = values.discountAmount || 0;
+
+      if (discountPercentage > 0) {
+        values.discountAmount = 0;
+      } else if (discountAmount > 0) {
+        values.discountPercentage = 0;
+      }
+
+      const payload = {
+        id: 0,
+        name: values.name,
+        discountPercentage: values.discountPercentage,
+        discountAmount: values.discountAmount,
+        createdAt: values.startAt
+          ? values.startAt.toISOString()
+          : new Date().toISOString(),
+        endAt: values.endAt
+          ? values.endAt.toISOString()
+          : new Date().toISOString(),
+        status: true,
+        pending: true,
+        products: selectedProductsData,
+      };
+
+      console.log("Gửi payload:", JSON.stringify(payload, null, 2));
+      console.log("Role từ localStorage:", localStorage.getItem("role"));
+
+      // Sử dụng hàm createSalePromotion đã import từ api.js
+      const response = await createSalePromotion(payload);
+
+      if (response) {
+        message.success("Tạo khuyến mãi thành công!");
         form.resetFields();
+        setSelectedProductIds([]);
         onCreate();
-      } else {
-        message.error("Failed to create sale promotion.");
+        onClose();
       }
     } catch (error) {
-      console.error("Submit error:", error);
-      message.error("Validation failed or request error.");
+      console.error("Lỗi khi gửi:", error);
+      message.error("Xác thực thất bại hoặc lỗi yêu cầu.");
     } finally {
       setLoading(false);
     }
@@ -67,44 +115,44 @@ const SalePromotionModal = ({ visible, onClose, onCreate }) => {
   return (
     <Modal
       visible={visible}
-      title="Create Sale Promotion"
+      title="Tạo Khuyến Mãi Bán Hàng"
       onCancel={onClose}
       footer={null}
     >
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
         <Form.Item
           name="name"
-          label="Promotion Name"
-          rules={[{ required: true }]}
+          label="Tên khuyến mãi"
+          rules={[{ required: true, message: "Vui lòng nhập tên khuyến mãi" }]}
         >
           <Input />
         </Form.Item>
 
-        <Form.Item
-          name="discountPercentage"
-          label="Discount Percentage"
-          rules={[{ required: true }]}
-        >
+        <Form.Item name="discountPercentage" label="Phần trăm giảm giá">
           <InputNumber min={0} max={100} style={{ width: "100%" }} />
+        </Form.Item>
+
+        <Form.Item name="discountAmount" label="Số tiền giảm giá">
+          <InputNumber min={0} style={{ width: "100%" }} />
         </Form.Item>
 
         <Form.Item
           name="startAt"
-          label="Start Date"
-          rules={[{ required: true }]}
+          label="Ngày bắt đầu"
+          rules={[{ required: true, message: "Vui lòng chọn ngày bắt đầu" }]}
         >
-          <DatePicker style={{ width: "100%" }} showTime />
-        </Form.Item>
-
-        <Form.Item name="endAt" label="End Date" rules={[{ required: true }]}>
           <DatePicker style={{ width: "100%" }} showTime />
         </Form.Item>
 
         <Form.Item
-          name="products"
-          label="Select Products"
-          rules={[{ required: true }]}
+          name="endAt"
+          label="Ngày kết thúc"
+          rules={[{ required: true, message: "Vui lòng chọn ngày kết thúc" }]}
         >
+          <DatePicker style={{ width: "100%" }} showTime />
+        </Form.Item>
+
+        <Form.Item label="Chọn sản phẩm">
           <div
             style={{
               maxHeight: "200px",
@@ -114,8 +162,9 @@ const SalePromotionModal = ({ visible, onClose, onCreate }) => {
             }}
           >
             <Checkbox.Group
+              value={selectedProductIds}
+              onChange={(checkedValues) => setSelectedProductIds(checkedValues)}
               style={{ display: "flex", flexDirection: "column", gap: "5px" }}
-              onChange={handleCheckboxChange}
             >
               {products.map((product) => (
                 <Checkbox key={product.id} value={product.id}>
@@ -128,7 +177,7 @@ const SalePromotionModal = ({ visible, onClose, onCreate }) => {
 
         <Form.Item>
           <Button type="primary" htmlType="submit" loading={loading}>
-            Create Promotion
+            Tạo Khuyến Mãi
           </Button>
         </Form.Item>
       </Form>

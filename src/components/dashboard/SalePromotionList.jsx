@@ -6,6 +6,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import SalePromotionModal from "./SalePromotionModal"; // Import modal
+import { deleteSalePromotion } from "../../constant/api";
 
 const API_URL = "https://quick-tish-fpt123-e6533ba7.koyeb.app";
 
@@ -39,6 +40,8 @@ const SalePromotionList = () => {
 
       const data = await response.json();
       setPromotions(data);
+      console.log(data);
+
       setFilteredPromotions(data);
     } catch (error) {
       console.error("Error fetching promotions:", error);
@@ -57,6 +60,32 @@ const SalePromotionList = () => {
     });
 
     setFilteredPromotions(filtered);
+  };
+  const handleDelete = async (promotionId) => {
+    // Show confirmation dialog using Ant Design Modal
+    Modal.confirm({
+      title: "Bạn có thật sự muốn xóa chương trình khuyến mãi này?",
+      okText: "Đồng ý",
+      cancelText: "Không",
+      onOk: async () => {
+        try {
+          const response = await deleteSalePromotion(promotionId);
+
+          if (response) {
+            // After successful deletion, fetch the updated list of promotions
+            fetchPromotions(); // Refresh the list of promotions
+          } else {
+            throw new Error("Failed to delete promotion");
+          }
+        } catch (error) {
+          console.error("Error deleting promotion:", error);
+        }
+      },
+      onCancel: () => {
+        // Optional: Handle the case when the user cancels the modal
+        console.log("Deletion canceled");
+      },
+    });
   };
 
   const handleViewProducts = (products) => {
@@ -78,7 +107,7 @@ const SalePromotionList = () => {
             letterSpacing: 1.5,
           }}
         >
-          Sale Promotion List
+          Danh sách khuyễn mãi
         </Typography>
 
         <Box
@@ -100,11 +129,11 @@ const SalePromotionList = () => {
               onChange={setEndDate}
             />
             <Button type="primary" onClick={handleFilter}>
-              Apply Filter
+              Bộ lọc
             </Button>
           </Box>
           <Button type="primary" onClick={() => setIsSaleModalOpen(true)}>
-            Create Promotion
+            Tạo khuyến mãi
           </Button>
         </Box>
 
@@ -116,31 +145,36 @@ const SalePromotionList = () => {
               key: "id",
             },
             {
-              title: "Discount %",
+              title: "Tên Khuyến mãi", // Thêm cột Name
+              dataIndex: "name", // Cột này sẽ lấy dữ liệu từ field `name`
+              key: "name", // Chỉ định key là "name"
+            },
+            {
+              title: "% Khuyến mãi",
               dataIndex: "discountPercentage",
               key: "discountPercentage",
               render: (text) => <Tag color="green">{text}%</Tag>,
             },
             {
-              title: "Discount Amount",
+              title: "Giảm giá",
               dataIndex: "discountAmount",
               key: "discountAmount",
               render: (text) => <Tag color="blue">{text} VND</Tag>,
             },
             {
-              title: "Start Date",
+              title: "Ngày bắt đầu",
               dataIndex: "createdAt",
               key: "createdAt",
               render: (text) => dayjs(text).format("YYYY-MM-DD HH:mm:ss"),
             },
             {
-              title: "End Date",
+              title: "Ngày kết thúc",
               dataIndex: "endAt",
               key: "endAt",
               render: (text) => dayjs(text).format("YYYY-MM-DD HH:mm:ss"),
             },
             {
-              title: "Status",
+              title: "Trạng thái",
               dataIndex: "status",
               key: "status",
               render: (status) =>
@@ -151,17 +185,32 @@ const SalePromotionList = () => {
                 ),
             },
             {
-              title: "Products",
+              title: "Thao tác",
               dataIndex: "products",
               key: "products",
-              render: (products) => (
-                <Button
-                  type="primary"
-                  onClick={() => handleViewProducts(products)}
-                  disabled={products.length === 0}
-                >
-                  View Products
-                </Button>
+              render: (products, record) => (
+                <div>
+                  <Button
+                    type="primary"
+                    onClick={() => handleViewProducts(products)}
+                    disabled={products.length === 0}
+                  >
+                    Xem chi tiết
+                  </Button>
+                  {localStorage.getItem("role") === "MANAGER" && (
+                    <Button
+                      type="primary"
+                      onClick={() => handleDelete(record.id)}
+                      style={{
+                        marginLeft: 8,
+                        backgroundColor: "red",
+                        borderColor: "red",
+                      }}
+                    >
+                      Xóa
+                    </Button>
+                  )}
+                </div>
               ),
             },
           ]}

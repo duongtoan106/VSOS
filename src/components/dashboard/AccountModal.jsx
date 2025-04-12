@@ -65,7 +65,7 @@ export default function AccountModal({ id, open, onClose }) {
 
   return (
     <Modal
-      title={<span style={titleStyle}>Account Information</span>}
+      title={<span style={titleStyle}>Thông tin tài khoản</span>}
       open={open}
       onCancel={onClose}
       footer={[
@@ -81,7 +81,7 @@ export default function AccountModal({ id, open, onClose }) {
             cursor: "pointer",
           }}
         >
-          Close
+          Đóng
         </button>,
       ]}
     >
@@ -92,9 +92,10 @@ export default function AccountModal({ id, open, onClose }) {
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           <InfoRow label="ID" value={account?.id} />
-          <InfoRow label="Username" value={account?.username} />
+          <InfoRow label="Tên người dùng" value={account?.username} />
           <InfoRow label="Email" value={account?.email} />
-          <InfoRow label="User Type" value={account?.role} />
+          <InfoRow label="Vai trò" value={account?.role} />
+          <InfoRow label="Địa chỉ" value={account?.address} />
           {/* <InfoRow
             label="Status"
             value={
@@ -105,9 +106,9 @@ export default function AccountModal({ id, open, onClose }) {
               )
             }
           /> */}
-          <InfoRow label="Phone" value={account?.phone} />
+          <InfoRow label="Số điện thoại" value={account?.phone} />
           <InfoRow
-            label="Status"
+            label="Trạng thái"
             value={
               account?.enabled ? (
                 <span style={{ color: "green" }}>Active</span>

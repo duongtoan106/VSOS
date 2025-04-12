@@ -18,8 +18,11 @@ import noImage from "../../assets/img/noImage.jpg";
 import { app } from "../../../firebaseConfig";
 import {
   createProduct,
+  deleteProductStatus,
   fetchProductDetails,
   fetchProducts,
+  updateProductStatus,
+  // updateProductStatus,
 } from "../../constant/api";
 
 const storage = getStorage(app); // Initialize Firebase storage
@@ -91,6 +94,59 @@ export default function ProductList() {
   };
 
   const handleCloseModal = () => setIsModalVisible(false);
+  const handleUpdateProduct = async (values) => {
+    setIsLoading(true);
+    try {
+      if (
+        !values.productName ||
+        !values.productDescription ||
+        !values.productPrice ||
+        !values.productQuantity
+      ) {
+        message.error("⚠️ Thiếu thông tin sản phẩm. Vui lòng kiểm tra lại.");
+        setIsLoading(false);
+        return;
+      }
+
+      let imageUrl = selectedProduct.image || noImage; // Use existing image if no new one
+      if (imageFile) {
+        imageUrl = await uploadImage(imageFile);
+        if (!imageUrl) {
+          message.error("⚠️ Lỗi tải ảnh lên.");
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      const updatedProductData = {
+        id: selectedProduct.id,
+        image: imageUrl,
+        name: values.productName,
+        quantity: Number(values.productQuantity), // Chuyển quantity thành số
+        description: values.productDescription,
+        price: Number(values.productPrice), // Chuyển price thành số
+        createdBy: selectedProduct.createdBy || "string",
+        status: "TRUE",
+        pending: "TRUE",
+      };
+
+      console.log("Form values:", values);
+      console.log("Updated product data being sent:", updatedProductData);
+
+      await updateProductStatus(updatedProductData);
+      message.success("🎉 Sản phẩm đã được cập nhật thành công!");
+      setIsModalVisible(false);
+
+      // Refresh product list
+      const updatedProducts = await fetchProducts();
+      setProducts(updatedProducts);
+    } catch (error) {
+      console.error("🔥 Lỗi khi cập nhật sản phẩm:", error);
+      message.error("⚠️ Cập nhật sản phẩm thất bại. Vui lòng thử lại.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleImageChange = (e) => {
     console.log("📸 handleImageChange called!");
@@ -138,7 +194,8 @@ export default function ProductList() {
       if (
         !values.productName ||
         !values.productDescription ||
-        !values.productPrice
+        !values.productPrice ||
+        !values.productQuantity
       ) {
         message.error("⚠️ Thiếu thông tin sản phẩm. Vui lòng kiểm tra lại.");
         setIsLoading(false);
@@ -159,6 +216,7 @@ export default function ProductList() {
       const productData = {
         image: imageUrl,
         name: values.productName,
+        quantity: values.productQuantity,
         description: values.productDescription,
         price: values.productPrice.toString(),
         createdBy: localStorage.getItem("username") || "Admin",
@@ -177,6 +235,26 @@ export default function ProductList() {
     } finally {
       setIsLoading(false); // Dừng loading sau khi hoàn tất
     }
+  };
+
+  const handleRemoveProduct = (id) => {
+    Modal.confirm({
+      title: "Bạn có chắc chắn muốn ẩn sản phẩm này không?",
+      content: "Sản phẩm sẽ không còn hiển thị với người dùng.",
+      okText: "Đồng ý",
+      cancelText: "Hủy",
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        try {
+          await deleteProductStatus(id);
+          message.success("Sản phẩm đã được cập nhật trạng thái!");
+          const updatedProducts = await fetchProducts();
+          setProducts(updatedProducts);
+        } catch (error) {
+          message.error("Không thể cập nhật trạng thái sản phẩm!");
+        }
+      },
+    });
   };
 
   // const handleRemoveProduct = async (productId) => {
@@ -202,6 +280,7 @@ export default function ProductList() {
         productName: data.name,
         productDescription: data.description,
         productPrice: data.price,
+        productQuantity: data.quantity || data.productQuantity,
       });
 
       setImagePreview(data.image || noImage); // Nếu có ảnh thì hiển thị
@@ -234,7 +313,7 @@ export default function ProductList() {
           borderColor: "rgb(180,0,0)",
         }}
       >
-        Create New Product
+        Tạo mới sản phẩm
       </Button>
 
       <TableContainer component={Paper}>
@@ -245,43 +324,43 @@ export default function ProductList() {
                 style={{ fontWeight: "bold", color: "rgb(180,0,0)" }}
                 align="center"
               >
-                PRODUCT ID
+                ID
               </TableCell>
               <TableCell
                 style={{ fontWeight: "bold", color: "rgb(180,0,0)" }}
                 align="left"
               >
-                PRODUCT NAME
+                Tên sản phẩm
               </TableCell>
               <TableCell
                 style={{ fontWeight: "bold", color: "rgb(180,0,0)" }}
                 align="left"
               >
-                DESCRIPTION
+                Mô tả
               </TableCell>
               <TableCell
                 style={{ fontWeight: "bold", color: "rgb(180,0,0)" }}
                 align="center"
               >
-                PRICE
+                Giá
               </TableCell>
               <TableCell
                 style={{ fontWeight: "bold", color: "rgb(180,0,0)" }}
                 align="center"
               >
-                STATUS
+                Trạng thái
               </TableCell>
               <TableCell
                 style={{ fontWeight: "bold", color: "rgb(180,0,0)" }}
                 align="center"
               >
-                USERNAME
+                Tên người tạo
               </TableCell>
               <TableCell
                 style={{ fontWeight: "bold", color: "rgb(180,0,0)" }}
                 align="center"
               >
-                ACTION
+                Thao tác
               </TableCell>
             </TableRow>
           </TableHead>
@@ -329,7 +408,7 @@ export default function ProductList() {
                     View
                   </Button>
 
-                  {localStorage.getItem("usertype") === "Manager" && (
+                  {localStorage.getItem("role") === "MANAGER" && (
                     <Button
                       style={{ color: "red", marginLeft: "8px" }}
                       onClick={() =>
@@ -355,7 +434,11 @@ export default function ProductList() {
       >
         <div style={{ display: "flex", gap: "20px" }}>
           <div style={{ flex: "1" }}>
-            <Form form={form} onFinish={handleFormSubmit} layout="vertical">
+            <Form
+              form={form}
+              onFinish={isViewMode ? handleUpdateProduct : handleFormSubmit}
+              layout="vertical"
+            >
               {/* <Form.Item
                 name="categoryId"
                 label="Category"
@@ -376,9 +459,16 @@ export default function ProductList() {
               </Form.Item> */}
               <Form.Item
                 name="productName"
-                label="Product Name"
+                label="Tên sản phẩm"
+                rules={[{ required: true, message: "Hãy nhập tên sản phẩm" }]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="productQuantity"
+                label="Số lượng"
                 rules={[
-                  { required: true, message: "Please enter product name" },
+                  { required: true, message: "Hãy nhập số lượng sản phẩm" },
                 ]}
               >
                 <Input />
@@ -394,14 +484,14 @@ export default function ProductList() {
               </Form.Item>
               <Form.Item
                 name="productPrice"
-                label="Price"
+                label="Giá sản phẩm"
                 rules={[
-                  { required: true, message: "Please enter price" },
+                  { required: true, message: "Hãy nhập giá sản phẩm" },
                   {
                     validator: (_, value) => {
                       if (value < 1) {
                         return Promise.reject(
-                          new Error("Product Price can't be less than 1!")
+                          new Error("Giá sản phẩm phải lớn hơn 1!")
                         );
                       }
                       // if (value > 9999) {
@@ -416,18 +506,33 @@ export default function ProductList() {
               >
                 <InputNumber style={{ width: "100%" }} />
               </Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={loading}
-                style={{
-                  marginTop: "16px",
-                  backgroundColor: "rgb(180,0,0)",
-                  borderColor: "rgb(180,0,0)",
-                }}
-              >
-                Submit
-              </Button>
+              {isViewMode ? (
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={isLoading}
+                  style={{
+                    marginTop: "16px",
+                    backgroundColor: "rgb(180,0,0)",
+                    borderColor: "rgb(180,0,0)",
+                  }}
+                >
+                  Cập nhật sản phẩm
+                </Button>
+              ) : (
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={isLoading}
+                  style={{
+                    marginTop: "16px",
+                    backgroundColor: "rgb(180,0,0)",
+                    borderColor: "rgb(180,0,0)",
+                  }}
+                >
+                  Tạo sản phẩm
+                </Button>
+              )}
             </Form>
           </div>
           <div style={{ flex: "1", textAlign: "center" }}>

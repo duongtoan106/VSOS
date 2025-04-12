@@ -47,8 +47,11 @@ const Login = () => {
       <h1 className="text-4xl text-white font-extrabold mt-10 absolute top-0 left-10 z-20 tracking-wide">
         Chào Mừng Đến
       </h1>
-      <h1 className="text-5xl font-extrabold text-[#1565C0] absolute top-24 left-10 z-20 tracking-wide">
-        Với VSOS
+      <h1
+        className="text-5xl font-extrabold text-[#1565C0] absolute top-24 left-10 z-20 tracking-wide cursor-pointer"
+        onClick={() => navigate("/")}
+      >
+        Với VSOS
       </h1>
 
       <div className="absolute inset-0 bg-gray-700 opacity-50 z-0"></div>

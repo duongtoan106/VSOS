@@ -203,7 +203,8 @@ export const createProduct = async (
       !values ||
       !values.productName ||
       !values.productDescription ||
-      !values.productPrice
+      !values.productPrice ||
+      !values.productQuantity
     ) {
       throw new Error("Thiếu thông tin sản phẩm. Vui lòng kiểm tra lại.");
     }
@@ -219,6 +220,7 @@ export const createProduct = async (
       id: 0,
       image: imageUrl,
       name: values.productName.trim(),
+      quantity: values.productQuantity,
       description: values.productDescription.trim(),
       price: String(values.productPrice).trim(),
       createdBy: localStorage.getItem("userName") || "Admin",
@@ -259,6 +261,80 @@ export const createProduct = async (
   }
 };
 
+export const deleteProductStatus = async (id) => {
+  console.log(`🗑️ Gọi API xoá sản phẩm ID: ${id}`);
+
+  try {
+    const response = await fetch(`${API_URL}/api/product/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    const data = await response.json().catch(() => null);
+    console.log("📩 Response nhận được:", response);
+    console.log("📌 Data nhận được:", data);
+
+    if (!response.ok) {
+      throw new Error(
+        `❌ Lỗi API: ${response.status} - ${data?.message || "Không xác định"}`
+      );
+    }
+
+    console.log(`✅ Sản phẩm ID ${id} đã bị xoá thành công!`);
+    return true;
+  } catch (error) {
+    console.error("⚠️ Lỗi khi xoá sản phẩm:", error);
+    alert(`🚨 Có lỗi xảy ra: ${error.message}`);
+    throw error;
+  }
+};
+import axios from "axios";
+
+export const updateProductStatus = async (productData) => {
+  try {
+    // Log dữ liệu sản phẩm trước khi gửi đi
+    console.log("Sending product data:", productData);
+
+    const response = await axios.put(
+      `${API_URL}/api/product/${productData.id}`,
+      {
+        id: productData.id,
+        image: productData.image,
+        name: productData.name,
+        description: productData.description,
+        price: productData.price,
+        createdBy: productData.createdBy || "string",
+        quantity: productData.quantity, // quantity là số
+        status: "TRUE",
+        pending: "TRUE",
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    // Log trạng thái phản hồi
+    console.log("API Response Status:", response.status);
+
+    // Log dữ liệu phản hồi từ API
+    console.log("API Response Data:", response.data);
+
+    // Kiểm tra xem API có trả về dữ liệu mới với quantity đã cập nhật không
+    if (response.data) {
+      console.log("Updated product quantity:", response.data.quantity);
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error("Error during product update:", error);
+    throw new Error("Cập nhật sản phẩm thất bại");
+  }
+};
+
 export const approveProduct = async (id) => {
   console.log("Gọi API duyệt sản phẩm với ID:", id);
 
@@ -290,6 +366,29 @@ export const approveProduct = async (id) => {
     console.error("Lỗi khi duyệt sản phẩm:", error);
     alert(`Có lỗi xảy ra: ${error.message}`);
     throw error;
+  }
+};
+export const deleteSalePromotion = async (promotionId) => {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(`${API_URL}/api/sale-promotion/${promotionId}`, {
+    method: "DELETE",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to delete promotion");
+  }
+
+  try {
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error parsing response:", error);
+    return true;
   }
 };
 
@@ -372,13 +471,16 @@ export const createSalePromotion = async (promotionData) => {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to create sale promotion");
+      // Kiểm tra lỗi từ API và thông báo lỗi chi tiết
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to create sale promotion");
     }
 
     return await response.json();
   } catch (error) {
-    console.error("Error creating sale promotion:", error);
-    throw error;
+    console.error("Error creating sale promotion:", error.message);
+    // Hiển thị thông báo lỗi cho người dùng
+    throw new Error(error.message || "An unexpected error occurred");
   }
 };
 
