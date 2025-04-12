@@ -9,6 +9,34 @@ const Search = () => {
   const [filtered, setFiltered] = useState([]);
   const navigate = useNavigate();
 
+  const removeVietnameseTones = (str) => {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D");
+  };
+
+  const highlightMatch = (text, keyword) => {
+    const keywords = removeVietnameseTones(keyword.toLowerCase()).split(" ");
+    const words = text.split(" ");
+
+    return words.map((word, i) => {
+      const normalized = removeVietnameseTones(word.toLowerCase());
+      const isMatch = keywords.some((kw) => normalized.includes(kw));
+
+      return (
+        <span
+          key={i}
+          className={isMatch ? "font-bold text-blue-600" : undefined}
+        >
+          {i > 0 && " "}
+          {word}
+        </span>
+      );
+    });
+  };
+
   useEffect(() => {
     const load = async () => {
       try {
@@ -27,8 +55,10 @@ const Search = () => {
       return;
     }
 
+    const normalizedQuery = removeVietnameseTones(query.toLowerCase());
+
     const result = products.filter((p) =>
-      p.name.toLowerCase().includes(query.toLowerCase())
+      removeVietnameseTones(p.name.toLowerCase()).includes(normalizedQuery)
     );
     setFiltered(result);
   }, [query, products]);
@@ -76,9 +106,9 @@ const Search = () => {
                 onError={(e) => (e.target.src = "/fallback.jpg")}
                 className="w-10 h-10 rounded object-cover border"
               />
-              <div className="text-sm">
+              <div className="text-sm text-left">
                 <p className="font-medium text-gray-800 line-clamp-1">
-                  {item.name}
+                  {highlightMatch(item.name, query)}
                 </p>
                 <p className="text-gray-500 text-xs">
                   {Number(item.price).toLocaleString()}₫
