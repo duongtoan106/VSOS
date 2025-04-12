@@ -5,6 +5,7 @@ import AllAccount from "./AllAccount";
 import ProductList from "./ProductList";
 import PendingList from "./PendingList";
 import SalePromotionList from "./SalePromotionList";
+import OrderListControlPanel from "./OrderListControlPanel";
 
 const { Header, Sider, Content } = Layout;
 
@@ -49,6 +50,7 @@ const MainLayout = () => {
     { key: "2", label: "DS sản phẩm", roles: ["ADMIN", "MANAGER", "STAFF"] },
     { key: "3", label: "DS sản phẩm đợi duyệt", roles: ["ADMIN", "MANAGER"] },
     { key: "4", label: "DS khuyến mãi", roles: ["ADMIN", "MANAGER", "STAFF"] },
+    { key: "5", label: "DS giao dịch", roles: ["ADMIN", "MANAGER", "STAFF"] },
     // { key: "5", label: "Pending Sale Promotion", roles: ["ADMIN", "MANAGER"] },
   ];
 
@@ -71,6 +73,8 @@ const MainLayout = () => {
         return <PendingList />;
       case "4":
         return <SalePromotionList />;
+      case "5":
+        return <OrderListControlPanel />;
       default:
         return <ProductList />;
     }

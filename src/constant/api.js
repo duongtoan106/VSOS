@@ -506,6 +506,28 @@ export const fetchOrders = async () => {
   }
 };
 
+// ========================== all ORDER MANAGEMENT ==========================
+export const fetchAllOrders = async () => {
+  try {
+    const response = await fetch(`${API_URL}/api/orders`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch orders");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    return [];
+  }
+};
+
 export const fetchOrderDetails = async (id) => {
   if (!id) {
     console.error("Error: ID is undefined!");
