@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import backgroundImage from "../../assets/cart.png";
-import { getCartItems, removeFromCart } from "../../constant/api";
+import { getCartItems, removeFromCart, createOrder } from "../../constant/api";
 import { toast } from "react-toastify";
 import { useMemo } from "react";
 
@@ -78,8 +78,23 @@ const Cart = () => {
   const handleCreateOrder = async () => {
     if (selectedItems.length === 0) return;
 
-    toast.success("Vui lòng quét mã để thanh toán!");
-    setShowQRModal(true);
+    const orderData = {
+      detail: cartItems
+        .filter((item) => selectedItems.includes(item.product.id))
+        .map((item) => ({
+          productId: item.product.id,
+          quantity: item.quantity,
+        })),
+    };
+
+    try {
+      await createOrder(orderData);
+      toast.success("Vui lòng quét mã để thanh toán!");
+      setShowQRModal(true);
+    } catch (error) {
+      console.error("Error creating order:", error);
+      toast.error("Không thể tạo đơn hàng. Vui lòng thử lại!");
+    }
   };
 
   useEffect(() => {

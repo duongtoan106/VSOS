@@ -16,16 +16,26 @@ export const login = async (username, password) => {
       body: JSON.stringify({ username, password }),
     });
 
+    const text = await response.text();
+
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Sai tài khoản hoặc mật khẩu!");
+      try {
+        const errorData = JSON.parse(text);
+        throw new Error(errorData.message || "Sai tài khoản hoặc mật khẩu!");
+      } catch {
+        throw new Error(text || "Sai tài khoản hoặc mật khẩu!");
+      }
     }
 
-    const data = await response.json();
-    console.log("Dữ liệu API trả về:", data);
-    return data;
+    try {
+      const data = JSON.parse(text);
+      console.log("Dữ liệu API trả về:", data);
+      return data;
+    } catch {
+      throw new Error("Phản hồi không hợp lệ từ máy chủ.");
+    }
   } catch (error) {
-    message.error(error.message);
+    console.error("Lỗi đăng nhập:", error.message);
     throw error;
   }
 };
@@ -262,7 +272,7 @@ export const createProduct = async (
 };
 
 export const deleteProductStatus = async (id) => {
-  console.log(`🗑️ Gọi API xoá sản phẩm ID: ${id}`);
+  console.log(`Gọi API xoá sản phẩm ID: ${id}`);
 
   try {
     const response = await fetch(`${API_URL}/api/product/${id}`, {
@@ -273,20 +283,20 @@ export const deleteProductStatus = async (id) => {
     });
 
     const data = await response.json().catch(() => null);
-    console.log("📩 Response nhận được:", response);
-    console.log("📌 Data nhận được:", data);
+    console.log("Response nhận được:", response);
+    console.log("Data nhận được:", data);
 
     if (!response.ok) {
       throw new Error(
-        `❌ Lỗi API: ${response.status} - ${data?.message || "Không xác định"}`
+        `Lỗi API: ${response.status} - ${data?.message || "Không xác định"}`
       );
     }
 
-    console.log(`✅ Sản phẩm ID ${id} đã bị xoá thành công!`);
+    console.log(`Sản phẩm ID ${id} đã bị xoá thành công!`);
     return true;
   } catch (error) {
-    console.error("⚠️ Lỗi khi xoá sản phẩm:", error);
-    alert(`🚨 Có lỗi xảy ra: ${error.message}`);
+    console.error("Lỗi khi xoá sản phẩm:", error);
+    alert(`Có lỗi xảy ra: ${error.message}`);
     throw error;
   }
 };
@@ -557,26 +567,37 @@ export const fetchOrderDetails = async (id) => {
 export const createOrder = async (orderData) => {
   const token = localStorage.getItem("token");
 
-  const res = await fetch(`${API_URL}/api/orders`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(orderData),
-  });
+  try {
+    const res = await fetch(`${API_URL}/api/orders`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(orderData),
+    });
 
-  const contentType = res.headers.get("content-type");
+    const contentType = res.headers.get("content-type");
 
-  if (res.ok) {
-    if (contentType && contentType.includes("application/json")) {
-      return await res.json();
+    const responseText = await res.text();
+
+    if (res.ok) {
+      if (contentType && contentType.includes("application/json")) {
+        return JSON.parse(responseText);
+      } else {
+        return { url: responseText };
+      }
     } else {
-      const text = await res.text();
-      return { url: text };
+      try {
+        const errorData = JSON.parse(responseText);
+        throw new Error(errorData.message || "Không thể tạo đơn hàng.");
+      } catch {
+        throw new Error(responseText || "Lỗi không xác định khi tạo đơn hàng.");
+      }
     }
-  } else {
-    throw new Error("Error creating order");
+  } catch (error) {
+    console.error("Lỗi createOrder:", error.message);
+    throw error;
   }
 };
 
@@ -641,6 +662,33 @@ export const processOrderTransaction = async (transactionData) => {
   } catch (error) {
     console.error("Error processing order transaction:", error);
     throw error;
+  }
+};
+
+export const fetchMyOrders = async () => {
+  if (!token) {
+    console.error("No token found");
+    return [];
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/api/orders/my-orders`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch orders. Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching my orders:", error);
+    return [];
   }
 };
 
