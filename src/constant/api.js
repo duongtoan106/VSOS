@@ -379,17 +379,16 @@ export const deleteSalePromotion = async (promotionId) => {
     },
   });
 
-  // If the response has content, parse it as JSON; otherwise, return true for successful deletion.
   if (!response.ok) {
     throw new Error("Failed to delete promotion");
   }
 
-  // Check if the response body contains JSON data
   try {
-    const data = await response.json(); // This will fail if there's no JSON in the response
-    return data; // You can return the response data if needed
+    const data = await response.json();
+    return data;
   } catch (error) {
-    return true; // If no data in response, just return true for successful deletion
+    console.error("Error parsing response:", error);
+    return true;
   }
 };
 

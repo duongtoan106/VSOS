@@ -1,13 +1,13 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Search, PhoneCall } from "lucide-react";
+import { PhoneCall } from "lucide-react";
 import { UserOutlined, MenuOutlined } from "@ant-design/icons";
 import { Dropdown } from "antd";
 import Button from "../Button/Button";
 import Logo from "../Logo";
+import Search from "../Search";
 
 const Header = () => {
-  const [query, setQuery] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [role, setRole] = useState(null);
   const navigate = useNavigate();
@@ -57,7 +57,7 @@ const Header = () => {
     },
     {
       key: "order",
-      label: "Đơn Hàng Của Bạn",
+      label: "Lịch Sử Giao Dịch",
       onClick: () => navigate("/order"),
     },
     {
@@ -147,25 +147,7 @@ const Header = () => {
         ))}
       </nav>
 
-      {/* Search Bar */}
-      <form
-        onSubmit={(e) => e.preventDefault()}
-        className="hidden md:flex items-center bg-gray-100 rounded-full px-3 py-1.5 border border-gray-300 focus-within:border-gray-500 w-64 lg:w-80 transition-all"
-      >
-        <input
-          type="text"
-          placeholder="Tìm sản phẩm bạn mong muốn..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="w-full outline-none bg-transparent text-gray-700 placeholder-gray-400 text-xs"
-        />
-        <button
-          type="submit"
-          className="text-gray-500 hover:text-black transition-all"
-        >
-          <Search size={16} />
-        </button>
-      </form>
+      <Search />
 
       {/* User Section */}
       <div className="flex gap-3">
