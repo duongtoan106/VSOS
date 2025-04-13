@@ -39,6 +39,7 @@ export default function AllAccount() {
   };
 
   // Fetch customer data from API
+
   useEffect(() => {
     const getCustomers = async () => {
       try {

@@ -109,6 +109,33 @@ export const fetchCustomers = async () => {
   }
 };
 
+export const deleteCustomerById = async (id) => {
+  if (!token) {
+    console.error("No token found.");
+    throw new Error("No authentication token provided.");
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/api/user/delete/${id}`, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to delete customer");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error deleting customer:", error);
+    throw error;
+  }
+};
+
 export const fetchAccountDetails = async (id) => {
   if (!id) {
     console.error("Error: ID is undefined!");
@@ -519,7 +546,7 @@ export const fetchOrders = async () => {
 // ========================== all ORDER MANAGEMENT ==========================
 export const fetchAllOrders = async () => {
   try {
-    const response = await fetch(`${API_URL}/api/orders`, {
+    const response = await fetch(`${API_URL}/api/orders/all`, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -601,24 +628,28 @@ export const createOrder = async (orderData) => {
   }
 };
 
-export const updateOrder = async (id, orderData) => {
+export const patchOrderStatus = async (id) => {
   try {
-    const response = await fetch(`${API_URL}/api/orders/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(orderData),
-    });
+    const response = await fetch(
+      `${API_URL}/api/orders/${id}/status?status=COMPLETED`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     if (!response.ok) {
-      throw new Error("Failed to update order");
+      const errorData = await response.json();
+      console.error("Error response:", errorData); // In chi tiết lỗi trả về từ API
+      throw new Error("Failed to update order status");
     }
 
     return await response.json();
   } catch (error) {
-    console.error("Error updating order:", error);
+    console.error("Error updating order status:", error);
     throw error;
   }
 };
@@ -672,7 +703,7 @@ export const fetchMyOrders = async () => {
   }
 
   try {
-    const response = await fetch(`${API_URL}/api/orders/my-orders`, {
+    const response = await fetch(`${API_URL}/api/orders`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "../../assets/login.jpg";
 import { login } from "../../constant/api";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
@@ -44,6 +44,7 @@ const Login = () => {
       className="flex items-center justify-center min-h-screen bg-cover bg-center relative"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
+      <ToastContainer />
       <h1 className="text-4xl text-white font-extrabold mt-10 absolute top-0 left-10 z-20 tracking-wide">
         Chào Mừng Đến
       </h1>
@@ -65,13 +66,13 @@ const Login = () => {
         <form onSubmit={handleSubmit}>
           <div className="mb-6">
             <label className="block text-sm font-semibold text-gray-700 mb-2 text-left">
-              Tên tài khoản
+              Tên tài khoản
             </label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="Nhập tên tài khoản"
+              placeholder="Nhập tên tài khoản"
               className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 shadow-sm text-sm"
               required
             />
