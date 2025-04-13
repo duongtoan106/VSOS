@@ -11,7 +11,7 @@ import {
 import { Button, message, Modal, Form, Input } from "antd";
 import { useNavigate } from "react-router-dom";
 import AccountModal from "./AccountModal";
-import { fetchCustomers } from "../../constant/api";
+import { deleteCustomerById, fetchCustomers } from "../../constant/api";
 
 // // import api from "../../config/axios";
 // import DeleteUser from "./DeleteUser";
@@ -66,24 +66,26 @@ export default function AllAccount() {
     setSelectedCustomerId(null);
   };
 
-  // Handle deleting a customer account
-  //   const handleDeleteCustomer = async (id) => {
-  //     const confirmDelete = window.confirm(
-  //       "Are you sure you want to delete this customer?"
-  //     );
-  //     if (!confirmDelete) return;
+  const handleDeleteCustomer = async (id) => {
+    const confirmDelete = window.confirm(
+      "Bạn có chắc chắn muốn xóa người dùng này?"
+    );
+    if (!confirmDelete) return;
 
-  //     try {
-  //       await api.delete(`/api/user/delete/${id}`, {
-  //         headers: { accept: "application/json" },
-  //       });
-  //       setCustomers(customers.filter((customer) => customer.userId !== id));
-  //       message.success("Customer deleted successfully!");
-  //     } catch (error) {
-  //       console.error("Error deleting customer:", error);
-  //       message.error("Failed to delete customer. Please try again.");
-  //     }
-  //   };
+    try {
+      await deleteCustomerById(id); // Gọi API xóa
+
+      // ✅ Cập nhật lại danh sách ngay trong state
+      setCustomers((prevCustomers) =>
+        prevCustomers.filter((customer) => customer.id !== id)
+      );
+
+      message.success("Xóa người dùng thành công!");
+    } catch (error) {
+      console.error("Lỗi khi xóa người dùng:", error);
+      message.error("Xóa người dùng thất bại. Vui lòng thử lại.");
+    }
+  };
 
   return (
     <div>
@@ -169,20 +171,30 @@ export default function AllAccount() {
                 <TableCell style={{ width: "25%" }} align="left">
                   {customer.email}
                 </TableCell>
-                <TableCell style={{ width: "20%" }} align="left">
+                <TableCell style={{ width: "10%" }} align="left">
                   {customer.role}
                 </TableCell>
-                <TableCell style={{ width: "10%" }} align="center">
-                  <Button
-                    style={{ color: "rgb(180,0,0)", marginRight: "8px" }}
-                    onClick={() => handleViewClick(customer.id)}
+                <TableCell style={{ width: "20%" }} align="center">
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      gap: "8px",
+                    }}
                   >
-                    Chi tiết
-                  </Button>
-                  {/* <DeleteUser
-                    customerId={customer.userId}
-                    onDelete={handleDeleteCustomer}
-                  /> */}
+                    <Button
+                      style={{ color: "rgb(180,0,0)" }}
+                      onClick={() => handleViewClick(customer.id)}
+                    >
+                      Chi tiết
+                    </Button>
+                    <Button
+                      style={{ color: "rgb(255,0,0)" }}
+                      onClick={() => handleDeleteCustomer(customer.id)}
+                    >
+                      Xóa
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

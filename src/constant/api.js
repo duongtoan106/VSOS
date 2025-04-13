@@ -116,7 +116,7 @@ export const deleteCustomerById = async (id) => {
   }
 
   try {
-    const response = await fetch(`${API_URL}/api/user/delete/${id}`, {
+    const response = await fetch(`${API_URL}/api/user/${id}`, {
       method: "DELETE",
       headers: {
         Accept: "application/json",
@@ -125,11 +125,17 @@ export const deleteCustomerById = async (id) => {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to delete customer");
+      const errorText = await response.text(); // 👈 dùng text thay vì json
+      throw new Error(errorText || "Failed to delete customer");
     }
 
-    return await response.json();
+    // Nếu có dữ liệu trả về, tùy vào API, bạn có thể trả json hoặc không
+    const responseData = await response.text();
+    try {
+      return JSON.parse(responseData);
+    } catch {
+      return responseData;
+    }
   } catch (error) {
     console.error("Error deleting customer:", error);
     throw error;
